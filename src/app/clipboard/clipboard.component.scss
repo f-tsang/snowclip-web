@@ -1,0 +1,136 @@
+:host {
+  display: grid;
+  // NOTE: Landscape ONLY.
+  // TBD: Minimum width before locking into portrait mode.
+  grid: auto / repeat(auto-fill, minmax(64px, 1fr));
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+  gap: 1rem;
+
+  @media (min-width: 720px) {
+    gap: 1.5rem;
+  }
+}
+ft-backdrop {
+  // TODO - Prefix the CSS variables in the backdrop library component.
+  --foreground-text-colour: rgba(0, 0, 0, 0.87);
+  --primary-colour: #f5f5f5;
+  --divider-colour: rgba(0, 0, 0, 0.06);
+  --foreground-text-colour: rgba(0, 0, 0, 0.87);
+  --foreground-alternate-colour: #777777;
+  --gap-size: 1rem;
+  color: var(--foreground-text-colour);
+  grid-column: 1/-1;
+
+  @media (min-width: 720px) {
+    grid-column: 2/-2;
+  }
+  @media (min-width: 1440px) {
+    grid-column: 3/-3;
+  }
+}
+main {
+  // TBD: Need to remove the clipboard heading before deciding.
+  // padding-top: 0.5rem;
+  display: grid;
+  grid:
+    'clipboard' min-content
+    'history  ' 1fr / 1fr;
+  gap: 1rem;
+
+  header {
+    display: grid;
+    grid: 'heading controls' minmax(2.5rem, max-content) / 1fr min-content;
+    align-items: center;
+
+    &:first-child {
+      grid-area: heading;
+      padding: 0 0.5rem 0 1rem;
+      font-size: 0.875rem;
+      color: var(--foreground-alternate-colour);
+    }
+    &:last-child {
+      grid-area: controls;
+      padding: 0 0.5rem;
+    }
+  }
+}
+.buffer {
+  min-height: 56px;
+  // ---
+  margin: 0 auto;
+  width: 40rem; // TEMPORARY. minmax(auto, 40rem)
+  // ---
+  .buffer-area {
+    // padding: calc(1rem - 1px); // 16px including the border.
+    border: 1px solid var(--border-colour);
+    border-radius: 0.5rem;
+    background: var(--content-colour);
+  }
+}
+.history {
+  // ---
+  margin: 0 auto;
+  width: 40rem; // TEMPORARY. minmax(auto, 40rem)
+  // ---
+  .clip-list {
+    border: 1px solid var(--border-colour);
+    padding: 4px 0;
+    border-radius: 8px;
+    background: var(--content-colour);
+    > :first-child {
+      border-radius: 0.25rem 0.25rem 0 0;
+    }
+    > :last-child {
+      border-radius: 0 0 0.25rem 0.25rem;
+    }
+    > :only-child {
+      border-radius: 0.25rem;
+    }
+    > :not(:last-child) {
+      border-bottom: 1px solid var(--divider-colour);
+    }
+  }
+}
+.viewing-clipboard {
+  padding: calc(1rem - 1px);
+}
+.editing-clipboard {
+  display: grid;
+  grid:
+    'textarea' 1fr
+    'controls' min-content / 1fr;
+  gap: 0.5rem;
+
+  textarea {
+    grid-area: textarea;
+    padding: calc(1rem - 1px);
+    border: none;
+    border-radius: 0.5rem;
+    outline: none;
+    resize: vertical;
+    font: inherit;
+  }
+  button {
+    grid-area: controls;
+    text-align: center;
+    color: var(--accent-colour);
+  }
+}
+.done-button,
+.update-button {
+  all: unset;
+  padding: 0.5rem;
+  user-select: none;
+  border-radius: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+.update-button {
+  width: 24px;
+  height: 24px;
+}

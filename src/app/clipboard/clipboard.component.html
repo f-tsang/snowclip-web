@@ -1,0 +1,53 @@
+<!-- TODO - Back layer
+  Connected Devices (n) ... Profile Username
+  ---
+  Favourites
+  .
+  .
+  .
+-->
+<ft-backdrop>
+  <main>
+    <div class="buffer">
+      <header>
+        <span>Clipboard</span>
+        <button class="update-button" (click)="refreshClipboard()">
+          <i class="material-icons">autorenew</i>
+        </button>
+      </header>
+      <div class="buffer-area">
+        <ng-container
+          *ngIf="isEditing | async; then editing; else viewing"
+        ></ng-container>
+      </div>
+    </div>
+    <div class="history">
+      <!-- TODO - If not IDB, history is not supported -->
+      <header>
+        <span>History</span>
+      </header>
+      <!-- TODO - Empty state -->
+      <div class="clip-list">
+        <clip-clip
+          *ngFor="let clip of clips | async"
+          [clip]="clip"
+          (use)="writeToClipboard($event)"
+        ></clip-clip>
+      </div>
+    </div>
+  </main>
+</ft-backdrop>
+
+<ng-template #editing>
+  <div class="editing-clipboard">
+    <textarea #editor autofocus>{{ buffer | async }}</textarea>
+    <button class="done-button" (click)="writeToClipboard(editor.value)">
+      Done
+    </button>
+  </div>
+</ng-template>
+<ng-template #viewing>
+  <div class="viewing-clipboard" (click)="editClipboard()">
+    {{ buffer | async }}
+  </div>
+</ng-template>
