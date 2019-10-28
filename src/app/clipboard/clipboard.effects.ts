@@ -1,16 +1,13 @@
 import {Injectable} from '@angular/core'
 import {Actions, Effect, ofType} from '@ngrx/effects'
-import {Store} from '@ngrx/store'
+import {EMPTY} from 'rxjs'
 import {
   catchError,
+  concatMap,
   filter,
-  map,
-  mapTo,
   mergeMap,
   pluck,
-  switchMap,
-  tap,
-  withLatestFrom
+  switchMap
 } from 'rxjs/operators'
 
 import {ClipboardService} from '../clipboard.service'
@@ -20,48 +17,51 @@ import {
   ActionTypes,
   AddToHistory,
   Clip,
-  ClipboardState,
-  getHistory,
   SetClipboard,
-  SetEditingClipboard
+  SetWritePermission
 } from './clipboard'
 
 @Injectable()
 export class ClipboardEffects {
-  @Effect()
+  @Effect({dispatch: false})
   setClipboard$ = this.actions.pipe(
     ofType<SetClipboard>(ActionTypes.SetClipboard),
-    pluck('clip'),
-    filter<Clip>(Boolean),
-    withLatestFrom(
-      this.store.select(getHistory).pipe(
-        filter(Boolean),
-        map(clips => new Clip(clips[0]))
-      )
-    ),
-    tap(clips => console.log(clips)),
-    filter(([{text: newText}, {text: oldText}]) => newText !== oldText),
-    switchMap(([clip]) =>
-      this.clipboard.writeText(clip.text).pipe(
-        mergeMap(() => this.db.transaction),
-        mergeMap(tx => {
-          const historyStore = tx.objectStore(TABLE_NAMES.history)
-          const addRequest = historyStore.add(clip)
-          return fromIdbRequest(addRequest)
-        }),
-        mapTo(new AddToHistory(clip)),
-        catchError(err => {
-          console.log(err)
-          return [new SetClipboard(null), new SetEditingClipboard(false)]
-        })
-      )
-    )
+    filter(({stopEffects}) => !stopEffects),
+    pluck('clip', 'text'),
+    filter<string>(Boolean),
+    switchMap(text => this.writeToClipboard(text))
+  )
+  @Effect({dispatch: false})
+  saveSnippet$ = this.actions.pipe(
+    ofType<AddToHistory>(ActionTypes.AddToHistory),
+    concatMap(({clip}) => this.saveSnippet(clip))
   )
 
   constructor(
     private clipboard: ClipboardService,
     private db: DatabaseService,
-    private store: Store<ClipboardState>,
     private actions: Actions
   ) {}
+
+  writeToClipboard(text: string) {
+    return this.clipboard.writeText(text).pipe(
+      catchError(err => {
+        console.error('Clipboard API: write error', err)
+        return [new SetWritePermission(false), new SetClipboard(null)]
+      })
+    )
+  }
+  saveSnippet(clip: Clip) {
+    return this.db.transaction.pipe(
+      mergeMap(tx => {
+        const historyStore = tx.objectStore(TABLE_NAMES.history)
+        return fromIdbRequest<number>(historyStore.add(clip)).pipe(
+          mergeMap(id => fromIdbRequest(historyStore.put({...clip, id}, id)))
+        )
+      }),
+      catchError(
+        err => (console.error('IndexedDB: transaction aborted', err), EMPTY)
+      )
+    )
+  }
 }

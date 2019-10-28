@@ -8,6 +8,9 @@ export class NotSupportedError extends Error {
   }
 }
 
+/**
+ * TODO - Move into CoreModule
+ */
 @Injectable({
   providedIn: 'root'
 })

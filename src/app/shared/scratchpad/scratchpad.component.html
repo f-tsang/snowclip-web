@@ -1,0 +1,18 @@
+<header class="header">
+  <span>Scratchpad</span>
+  <div class="controls" *ngIf="editingChange | async">
+    <button class="icon-button" (click)="reset()">
+      <i class="material-icons">clear</i>
+    </button>
+    <button class="icon-button" (click)="reset(editor.value)">
+      <i class="material-icons colour-primary">done</i>
+    </button>
+  </div>
+</header>
+<textarea
+  rows="1"
+  (click)="editingChange.emit(true)"
+  (input)="resizeHeight()"
+  [(ngModel)]="value"
+  #editor="ngModel"
+></textarea>

@@ -20,6 +20,8 @@ import {
   getReadPermissionStatus,
   getWritePermissionStatus,
   LoadHistory,
+  SetClipboard,
+  SetEditingText,
   SetReadPermission,
   SetWritePermission
 } from './clipboard/clipboard'
@@ -28,6 +30,7 @@ import {DatabaseService} from './database.service'
 import {PermissionsService} from './permissions.service'
 
 /**
+ * TODO - Move into CoreModule
  * TODO - UWA version must provide a native version for this service.
  * TBD: Set onchange permission query to dispatch set clipboard permission.
  */
@@ -56,11 +59,17 @@ export class ClipboardService {
             const cursorRequest = historyStore.openCursor(null, 'prev')
             return fromIdbCursor<Partial<Clip>>(cursorRequest)
           }),
-          take(10),
+          // take(10), // TODO - Load more clips on scroll
           map(serializedClip => new Clip(serializedClip)),
           toArray()
         )
-        .subscribe(clips => this.store.dispatch(new LoadHistory(clips)))
+        .subscribe(clips => {
+          this.store.dispatch(
+            new SetEditingText((clips[0] && clips[0].text) || '')
+          )
+          this.store.dispatch(new SetClipboard(new Clip(clips[0]), true))
+          this.store.dispatch(new LoadHistory(clips))
+        })
       merge(this.getReadPermission(), this.getWritePermission()).subscribe()
     } else {
       this.clipboard = throwError(new Error('Clipboard API not supported.'))
@@ -94,7 +103,16 @@ export class ClipboardService {
     )
   }
 
-  readText() {
+  /**
+   * NOTE: Only Chrome supports reading from the clipboard.
+   */
+  readText(skipCheck?: boolean) {
+    if (skipCheck) {
+      return this.clipboard.pipe(
+        mergeMap(clipboard => clipboard.readText()),
+        map(text => new Clip({text}))
+      )
+    }
     const isReadable$ = this.getReadPermission().pipe(
       filter(state => this.isPermissible(state)),
       catchError(this.continueWithWarning.bind(this)),
@@ -108,9 +126,15 @@ export class ClipboardService {
     return textClip$
   }
   // TBD: If no permission, select text and document.execCommand('copy').
-  writeText(text: string) {
+  writeText(text: string, skipCheck?: boolean) {
     if (typeof text !== 'string') {
       return EMPTY
+    }
+    if (skipCheck) {
+      return this.clipboard.pipe(
+        take(1),
+        mergeMap(clipboard => clipboard.writeText(text))
+      )
     }
     const isWritable$ = this.getWritePermission().pipe(
       filter(state => this.isPermissible(state)),
@@ -122,9 +146,6 @@ export class ClipboardService {
       mergeMap(([clipboard]) => clipboard.writeText(text))
     )
     return writeToClipboard$
-  }
-  directWrite(text: string) {
-    return this.clipboard.pipe(tap(clipboard => clipboard.writeText(text)))
   }
 
   // /**

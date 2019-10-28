@@ -2,9 +2,11 @@ import {Action, createFeatureSelector, createSelector} from '@ngrx/store'
 
 export interface ClipboardState {
   permissions: {read: boolean; write: boolean}
-  editing: boolean
-  clip: Clip
+  editing: boolean // Manages editing state for clip-scratchpad.
+  clip: Clip // Last known clipboard state.
   history: Clip[]
+  editingText: string // Manages content state for clip-scratchpad.
+  isLoading: boolean // Ensures clipboard is not read before history is loaded.
 }
 export class Clip {
   type = 'text/plain'
@@ -21,6 +23,7 @@ export const enum ActionTypes {
   SetWritePermission = '[Clipboard] SET_WRITE_PERMISSION',
   SetClipboard = '[Clipboard] SET_CLIPBOARD',
   SetEditingClipboard = '[Clipboard] SET_EDITING_CLIPBOARD',
+  SetEditingText = '[Clipboard] SET_EDITING_TEXT',
   LoadHistory = '[Clipboard] LOAD_HISTORY',
   AddToHistory = '[Clipboard] ADD_TO_HISTORY',
   NotImplemented = '[Clipboard] NOT_IMPLEMENTED'
@@ -35,15 +38,15 @@ export class SetWritePermission implements Action {
 }
 export class SetClipboard implements Action {
   readonly type = ActionTypes.SetClipboard
-  constructor(public clip: Clip | null) {}
+  constructor(public clip: Clip | null, public stopEffects?: boolean) {}
 }
 export class SetEditingClipboard implements Action {
   readonly type = ActionTypes.SetEditingClipboard
   constructor(public editing: boolean) {}
 }
-export class NotImplemented implements Action {
-  readonly type = ActionTypes.NotImplemented
-  constructor(public message?: string) {}
+export class SetEditingText implements Action {
+  readonly type = ActionTypes.SetEditingText
+  constructor(public text: string) {}
 }
 export class LoadHistory implements Action {
   readonly type = ActionTypes.LoadHistory
@@ -52,6 +55,10 @@ export class LoadHistory implements Action {
 export class AddToHistory implements Action {
   readonly type = ActionTypes.AddToHistory
   constructor(public clip: Clip) {}
+}
+export class NotImplemented implements Action {
+  readonly type = ActionTypes.NotImplemented
+  constructor(public message?: string) {}
 }
 
 export const featureName = 'clipboard'
@@ -76,4 +83,12 @@ export const getIsEditingClipboard = createSelector(
 export const getHistory = createSelector(
   selectFeature,
   ({history}) => history
+)
+export const getEditingText = createSelector(
+  selectFeature,
+  ({editingText}) => editingText
+)
+export const getIsLoading = createSelector(
+  selectFeature,
+  ({isLoading}) => isLoading
 )

@@ -1,5 +1,10 @@
-import {Component, HostListener, Input, Output} from '@angular/core'
-import {Subject} from 'rxjs'
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output
+} from '@angular/core'
 
 import {Clip} from '../clipboard'
 
@@ -7,7 +12,7 @@ import {Clip} from '../clipboard'
  * TBD: Controls for clips.
  *  - star
  *  - add
- *  - clear
+ *  - delete
  */
 @Component({
   selector: 'clip-clip',
@@ -15,13 +20,11 @@ import {Clip} from '../clipboard'
   styleUrls: ['./clip.component.scss']
 })
 export class ClipComponent {
-  @Input()
-  clip: Clip
-  @Output()
-  use = new Subject()
+  @Input() clip: Clip
+  @Output() use = new EventEmitter()
 
   @HostListener('click')
   onClick() {
-    this.use.next(this.clip.text)
+    this.use.emit(this.clip.text)
   }
 }

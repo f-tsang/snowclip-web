@@ -4,54 +4,58 @@ import {
   Component,
   HostListener,
   Inject,
+  OnDestroy,
   OnInit
 } from '@angular/core'
 import {Store} from '@ngrx/store'
-import {combineLatest, merge, of} from 'rxjs'
+import {combineLatest, of} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
   filter,
-  map,
   pluck,
+  publishLast,
+  refCount,
   switchMap,
-  take,
-  tap
+  take
 } from 'rxjs/operators'
 
 import {ClipboardService} from '../clipboard.service'
-import {DatabaseService} from '../database.service'
 import {
+  AddToHistory,
   Clip,
   ClipboardState,
   getCurrentClip,
+  getEditingText,
   getHistory,
   getIsEditingClipboard,
+  getIsLoading,
   getReadPermissionStatus,
   SetClipboard,
-  SetEditingClipboard
+  SetEditingClipboard,
+  SetEditingText
 } from './clipboard'
 
-const errorText = 'Requires permission to read the clipboard.'
-
 /**
- * TBD: Consider not using the backdrop title and button.
+ * TBD: Handle saving duplicates?
  */
 @Component({
   selector: 'clip-clipboard',
   templateUrl: './clipboard.component.html',
   styleUrls: ['./clipboard.component.scss']
 })
-export class ClipboardComponent implements OnInit, AfterViewInit {
+export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
+  isLoading = this.store.select(getIsLoading)
   clips = this.store.select(getHistory)
   readPermission = this.store.select(getReadPermissionStatus)
   isEditing = this.store.select(getIsEditingClipboard)
+  editingText = this.store.select(getEditingText)
   clip = this.store.select(getCurrentClip) // TODO - Use for the error state
   buffer = this.clip.pipe(
     switchMap(currentClip =>
       of(currentClip).pipe(
         pluck('text'),
-        catchError(() => of(errorText))
+        catchError(() => of(''))
       )
     ),
     distinctUntilChanged()
@@ -60,7 +64,6 @@ export class ClipboardComponent implements OnInit, AfterViewInit {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private clipboard: ClipboardService,
-    private db: DatabaseService,
     private store: Store<ClipboardState>
   ) {}
   ngOnInit() {}
@@ -69,52 +72,86 @@ export class ClipboardComponent implements OnInit, AfterViewInit {
       this.softRefreshClipboard()
     }
   }
+  ngOnDestroy() {}
 
   refreshClipboard() {
-    this.clips
+    const readText$ = this.clipboard.readText().pipe(
+      publishLast(),
+      refCount()
+    )
+    combineLatest(readText$, this.isEditing)
       .pipe(
-        filter(Boolean),
-        switchMap(() => combineLatest(this.clipboard.readText(), this.buffer)),
+        take(1),
+        filter(([_, editing]) => !editing),
+        pluck(0, 'text')
+      )
+      .subscribe(text => this.store.dispatch(new SetEditingText(text)))
+    combineLatest(readText$, this.buffer)
+      .pipe(
         take(1),
         filter(([clip, buffer]) => clip && clip.text !== buffer),
-        map(([clip]) => clip)
+        pluck(0)
       )
       .subscribe({
-        next: (clip: Clip) => this.store.dispatch(new SetClipboard(clip)),
-        error: () => {
-          this.store.dispatch(new SetEditingClipboard(false))
-          this.store.dispatch(new SetClipboard(null))
-        }
+        next: (clip: Clip) => {
+          this.store.dispatch(new SetClipboard(clip, true))
+          this.store.dispatch(new AddToHistory(clip))
+        },
+        error: () => this.store.dispatch(new SetClipboard(null))
       })
   }
-  editClipboard() {
+
+  useSnippet(text = '') {
+    combineLatest(this.isEditing, this.editingText)
+      .pipe(
+        take(1),
+        filter(([isEditing, editingText]) => !isEditing && editingText !== text)
+      )
+      .subscribe({
+        next: () => this.store.dispatch(new SetEditingText(text))
+      })
     this.buffer
       .pipe(
         take(1),
-        filter(text => text !== errorText)
+        filter(buffer => buffer !== text)
       )
-      .subscribe(() => this.store.dispatch(new SetEditingClipboard(true)))
+      .subscribe(() => this.store.dispatch(new SetClipboard(new Clip({text}))))
   }
-  // TBD: Show toast 'Copied to clipboard'.
-  writeToClipboard(text = '') {
-    const setClipboard$ = this.buffer.pipe(
-      take(1),
-      filter(buffer => buffer !== text),
-      tap(() => this.store.dispatch(new SetClipboard(new Clip({text}))))
-    )
-    const setIsEditing$ = this.isEditing.pipe(
-      take(1),
-      filter(Boolean),
-      tap(() => this.store.dispatch(new SetEditingClipboard(false)))
-    )
-    merge(setClipboard$, setIsEditing$).subscribe()
+  // TODO - Show toast 'Copied to clipboard'.
+  saveSnippet(text = '') {
+    const clip = new Clip({text})
+    if (text !== '') {
+      this.store.dispatch(new AddToHistory(clip))
+    }
+    this.buffer
+      .pipe(
+        take(1),
+        filter(buffer => buffer !== text)
+      )
+      .subscribe(() => this.store.dispatch(new SetClipboard(clip)))
+  }
+
+  updateEditingValue(text = '') {
+    this.store.dispatch(new SetEditingText(text))
+  }
+  updateEditingState(isEditing = false) {
+    this.store.dispatch(new SetEditingClipboard(isEditing))
   }
 
   @HostListener('window:focus')
   private softRefreshClipboard() {
-    this.clipboard
-      .getReadPermission()
-      .pipe(filter(state => state === 'granted'))
+    combineLatest(
+      this.isLoading,
+      this.isEditing,
+      this.clipboard.getReadPermission()
+    )
+      .pipe(
+        take(1),
+        filter(
+          ([loading, editing, state]) =>
+            !loading && !editing && state === 'granted'
+        )
+      )
       .subscribe(() => this.refreshClipboard())
   }
 }

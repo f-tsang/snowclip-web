@@ -14,6 +14,7 @@ import {
   LoadHistory,
   SetClipboard,
   SetEditingClipboard,
+  SetEditingText,
   SetReadPermission,
   SetWritePermission
 } from './clipboard'
@@ -21,11 +22,6 @@ import {ClipboardRoutingModule} from './clipboard-routing.module'
 import {ClipboardComponent} from './clipboard.component'
 import {ClipboardEffects} from './clipboard.effects'
 
-/**
- * TODO
- *  - IDB stuff before MVP is done
- *  - Remove mocks
- */
 @NgModule({
   declarations: [ClipboardComponent, ClipComponent],
   imports: [
@@ -43,7 +39,9 @@ const initialState: ClipboardState = {
   permissions: {read: false, write: false},
   clip: null,
   editing: false,
-  history: null
+  editingText: '',
+  history: [],
+  isLoading: true
 }
 function clipboardReducer(
   state = initialState,
@@ -66,9 +64,13 @@ function clipboardReducer(
       const {editing} = action as SetEditingClipboard
       return {...state, editing}
     }
+    case ActionTypes.SetEditingText: {
+      const {text} = action as SetEditingText
+      return {...state, editingText: text}
+    }
     case ActionTypes.LoadHistory: {
       const {history} = action as LoadHistory
-      return {...state, history}
+      return {...state, history, isLoading: false}
     }
     case ActionTypes.AddToHistory: {
       const {clip} = action as AddToHistory

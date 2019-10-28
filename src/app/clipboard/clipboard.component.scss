@@ -1,3 +1,5 @@
+@import '../shared/styles';
+
 :host {
   display: grid;
   // NOTE: Landscape ONLY.
@@ -18,7 +20,7 @@ ft-backdrop {
   --primary-colour: #f5f5f5;
   --divider-colour: rgba(0, 0, 0, 0.06);
   --foreground-text-colour: rgba(0, 0, 0, 0.87);
-  --foreground-alternate-colour: #777777;
+  --foreground-alternate-colour: #777;
   --gap-size: 1rem;
   color: var(--foreground-text-colour);
   grid-column: 1/-1;
@@ -31,54 +33,36 @@ ft-backdrop {
   }
 }
 main {
-  // TBD: Need to remove the clipboard heading before deciding.
-  // padding-top: 0.5rem;
   display: grid;
   grid:
     'clipboard' min-content
     'history  ' 1fr / 1fr;
-  gap: 1rem;
-
-  header {
-    display: grid;
-    grid: 'heading controls' minmax(2.5rem, max-content) / 1fr min-content;
-    align-items: center;
-
-    &:first-child {
-      grid-area: heading;
-      padding: 0 0.5rem 0 1rem;
-      font-size: 0.875rem;
-      color: var(--foreground-alternate-colour);
-    }
-    &:last-child {
-      grid-area: controls;
-      padding: 0 0.5rem;
-    }
-  }
-}
-.buffer {
-  min-height: 56px;
-  // ---
-  margin: 0 auto;
-  width: 40rem; // TEMPORARY. minmax(auto, 40rem)
-  // ---
-  .buffer-area {
-    // padding: calc(1rem - 1px); // 16px including the border.
-    border: 1px solid var(--border-colour);
-    border-radius: 0.5rem;
-    background: var(--content-colour);
-  }
+  gap: var(--gap-size);
+  height: 100%;
 }
 .history {
+  // WIP
   // ---
   margin: 0 auto;
-  width: 40rem; // TEMPORARY. minmax(auto, 40rem)
+  max-width: 40rem; // TEMPORARY. minmax(auto, 40rem)
+  width: 100%;
   // ---
-  .clip-list {
+  display: grid;
+  grid:
+    'header' 2.5rem
+    'history' min-content / 1fr;
+  gap: 0.5rem;
+
+  > header {
+    grid-area: header;
+  }
+  > .clip-list {
+    grid-area: history;
     border: 1px solid var(--border-colour);
     padding: 4px 0;
     border-radius: 8px;
     background: var(--content-colour);
+
     > :first-child {
       border-radius: 0.25rem 0.25rem 0 0;
     }
@@ -93,44 +77,10 @@ main {
     }
   }
 }
-.viewing-clipboard {
-  padding: calc(1rem - 1px);
-}
-.editing-clipboard {
-  display: grid;
-  grid:
-    'textarea' 1fr
-    'controls' min-content / 1fr;
-  gap: 0.5rem;
-
-  textarea {
-    grid-area: textarea;
-    padding: calc(1rem - 1px);
-    border: none;
-    border-radius: 0.5rem;
-    outline: none;
-    resize: vertical;
-    font: inherit;
-  }
-  button {
-    grid-area: controls;
-    text-align: center;
-    color: var(--accent-colour);
-  }
-}
-.done-button,
-.update-button {
-  all: unset;
-  padding: 0.5rem;
-  user-select: none;
-  border-radius: 0.5rem;
-
-  &:hover {
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.1);
-  }
-}
-.update-button {
-  width: 24px;
-  height: 24px;
+.listEmptyState {
+  display: flex;
+  max-height: 5rem;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }

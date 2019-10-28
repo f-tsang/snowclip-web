@@ -13,6 +13,9 @@ import {
 } from './database'
 import {IndexedDb} from './shared/shared.providers'
 
+/**
+ * TODO - Move into CoreModule
+ */
 @Injectable({
   providedIn: 'root'
 })

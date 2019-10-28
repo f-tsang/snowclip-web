@@ -1,0 +1,41 @@
+@import '../styles';
+
+:host {
+  // WIP
+  // ---
+  margin: 0 auto;
+  max-width: 40rem; // TEMPORARY. minmax(auto, 40rem)
+  width: 100%;
+  // ---
+  display: grid;
+  grid:
+    'header' 2.5rem
+    'editor' 1fr / 1fr;
+  gap: 0.5rem;
+  min-height: 3.5rem;
+
+  > header {
+    grid-area: header;
+  }
+  > textarea {
+    grid-area: editor;
+  }
+  > .controls {
+    grid-area: controls;
+  }
+}
+textarea {
+  grid-area: textarea;
+  padding: calc(1rem - 1px);
+  border: 1px solid var(--border-colour);
+  border-radius: 0.5rem;
+  outline: none;
+  resize: none;
+  font: inherit;
+  overflow: auto;
+}
+.controls {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+}
