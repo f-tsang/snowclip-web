@@ -1,10 +1,10 @@
 :host {
   padding: 0.5rem 1rem;
   display: grid;
-  // user-select: none; // TBD
+  user-select: none;
 
   &:hover {
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.1); // NOTE: TEMPORARY.
+    background: rgba(0, 0, 0, 0.1); // TEMPORARY.
   }
 }

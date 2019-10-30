@@ -1,0 +1,29 @@
+<header class="header">
+  <span class="header-title">Saved Snippets</span>
+  <!-- TODO - Remove button if not supported -->
+  <div class="header-controls">
+    <div
+      class="button clipboard-button"
+      title="Read clipboard"
+      (click)="refreshClipboard()"
+    >
+      <i
+        class="material-icons"
+        [ngClass]="{'clipboard-read': readPermission | async}"
+        >toggle_off</i
+      >
+      <i class="material-icons">assignment</i>
+    </div>
+  </div>
+</header>
+<div class="clip-list" *ngIf="(clips | async)?.length > 0; else emptyListState">
+  <clip-clip
+    *ngFor="let clip of clips | async"
+    [clip]="clip"
+    (use)="useSnippet($event)"
+    (mousedown)="$event.preventDefault()"
+  ></clip-clip>
+</div>
+<ng-template #emptyListState>
+  <div class="emptyListState">Your saved snippets will show up here.</div>
+</ng-template>

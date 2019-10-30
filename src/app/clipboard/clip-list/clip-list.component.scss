@@ -1,0 +1,55 @@
+@import '../../shared/styles';
+
+:host {
+  // WIP
+  // ---
+  margin: 0 auto;
+  max-width: 40rem; // TEMPORARY. minmax(auto, 40rem)
+  width: 100%;
+  // ---
+  display: grid;
+  grid:
+    'header' 2.5rem
+    'history' min-content / 1fr;
+  gap: 0.5rem;
+
+  > header {
+    grid-area: header;
+  }
+}
+.clipboard-button {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+  border-radius: 1.25rem;
+}
+.clipboard-read {
+  color: var(--accent-colour);
+}
+.clip-list {
+  grid-area: history;
+  border: 1px solid var(--border-colour);
+  padding: 0.25rem 0;
+  border-radius: 0.5rem;
+  background: var(--content-colour);
+
+  > :first-child {
+    border-radius: 0.25rem 0.25rem 0 0;
+  }
+  > :last-child {
+    border-radius: 0 0 0.25rem 0.25rem;
+  }
+  > :only-child {
+    border-radius: 0.25rem;
+  }
+  > :not(:last-child) {
+    border-bottom: 1px solid var(--divider-colour);
+  }
+}
+.emptyListState {
+  display: flex;
+  height: 5rem;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}

@@ -32,7 +32,7 @@ export class ScratchpadComponent implements OnChanges {
   }
 
   reset(emitValue?: string) {
-    this.valueChange.emit('')
+    this.setValue('')
     this.editingChange.emit(false)
     if (emitValue) {
       this.done.emit(emitValue)
@@ -45,6 +45,13 @@ export class ScratchpadComponent implements OnChanges {
     if (this.editor && this.editor.nativeElement) {
       this.editor.nativeElement.style.height = `` // Excludes the old height.
       this.editor.nativeElement.style.height = `${this.editor.nativeElement.scrollHeight}px`
+    }
+  }
+
+  private setValue(value: string) {
+    if (typeof value === 'string') {
+      this.value = value
+      this.valueChange.emit(value)
     }
   }
 }

@@ -2,21 +2,18 @@
 .header {
   display: grid;
   grid: 'heading controls' minmax(2.5rem, max-content) / 1fr max-content;
+  grid-auto-flow: column;
   align-items: center;
+  font-size: 0.875rem;
+  color: var(--foreground-alternate-colour);
 
-  > :first-child {
-    grid-area: heading;
-    padding: 0 0.5rem 0 1rem;
-    font-size: 0.875rem;
-    color: var(--foreground-alternate-colour);
-  }
-  > :last-child {
-    grid-area: controls;
-    padding: 0 0.5rem;
-  }
-  > :only-child {
+  > .header-title {
     grid-area: heading;
     padding: 0 1rem;
+  }
+  > .header-controls {
+    grid-area: controls;
+    margin-right: 0.5rem;
   }
 }
 

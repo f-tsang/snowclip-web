@@ -20,10 +20,12 @@ import {
 } from './clipboard'
 import {ClipboardRoutingModule} from './clipboard-routing.module'
 import {ClipboardComponent} from './clipboard.component'
-import {ClipboardEffects} from './clipboard.effects'
+import {ClipboardEffects} from './clipboard.effects';
+import { ClipListComponent } from './clip-list/clip-list.component';
+import { ClipEditorComponent } from './clip-editor/clip-editor.component'
 
 @NgModule({
-  declarations: [ClipboardComponent, ClipComponent],
+  declarations: [ClipboardComponent, ClipComponent, ClipListComponent, ClipEditorComponent],
   imports: [
     ClipboardRoutingModule,
     CommonModule,

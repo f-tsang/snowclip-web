@@ -13,19 +13,9 @@
     'editor' 1fr / 1fr;
   gap: 0.5rem;
   min-height: 3.5rem;
-
-  > header {
-    grid-area: header;
-  }
-  > textarea {
-    grid-area: editor;
-  }
-  > .controls {
-    grid-area: controls;
-  }
 }
 textarea {
-  grid-area: textarea;
+  grid-area: editor;
   padding: calc(1rem - 1px);
   border: 1px solid var(--border-colour);
   border-radius: 0.5rem;

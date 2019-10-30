@@ -9,10 +9,10 @@ import {
 import {Clip} from '../clipboard'
 
 /**
- * TBD: Controls for clips.
- *  - star
- *  - add
- *  - delete
+ * TODO - Controls for clips
+ *  - long press favourite
+ *  - swipe to delete
+ *  - mouseover for both options
  */
 @Component({
   selector: 'clip-clip',
