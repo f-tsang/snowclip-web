@@ -1,5 +1,5 @@
 <header class="header">
-  <span class="header-title">Scratchpad</span>
+  <label class="header-title" for="scratchpad">Scratchpad</label>
   <div class="header-controls controls" *ngIf="editingChange | async">
     <button class="icon-button" title="Clear" (click)="reset()">
       <i class="material-icons">clear</i>
@@ -10,6 +10,7 @@
   </div>
 </header>
 <textarea
+  id="scratchpad"
   rows="1"
   placeholder="Create a snippet..."
   (click)="editingChange.emit(true)"

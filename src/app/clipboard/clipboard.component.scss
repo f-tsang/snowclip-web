@@ -2,13 +2,9 @@
 
 :host {
   display: grid;
-  // TODO - See if build --prod messes up the grid shorthand still
-  grid:
-    'appbar' minmax(2.5rem, max-content)
-    'content' 1fr / minmax(auto, 64rem);
-  // grid-template-areas: 'appbar' 'content';
-  // grid-template-rows: minmax(2.5rem, max-content) 1fr;
-  // grid-template-columns: minmax(auto, 64rem);
+  grid-template-areas: 'appbar' 'content';
+  grid-template-rows: minmax(2.5rem, max-content) 1fr;
+  grid-template-columns: minmax(auto, 64rem);
   justify-content: center;
   height: 100%;
   overflow: hidden;
