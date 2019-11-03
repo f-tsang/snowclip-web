@@ -10,9 +10,8 @@ import {Clip} from '../clipboard'
 
 /**
  * TODO - Controls for clips
- *  - long press favourite
- *  - swipe to delete
- *  - mouseover for both options
+ *  - swipe left to favourite
+ *  - swipe right to delete
  */
 @Component({
   selector: 'clip-clip',
@@ -21,10 +20,24 @@ import {Clip} from '../clipboard'
 })
 export class ClipComponent {
   @Input() clip: Clip
-  @Output() use = new EventEmitter()
+  @Output() use = new EventEmitter<string>()
+  @Output() delete = new EventEmitter<void>()
+  @Output() favourite = new EventEmitter<void>()
+  mouseover = false
 
-  @HostListener('click')
-  onClick() {
-    this.use.emit(this.clip.text)
+  @HostListener('mouseenter')
+  onMouseEnter() {
+    this.mouseover = true
+  }
+  @HostListener('mouseleave')
+  onMouseLeave() {
+    this.mouseover = false
+  }
+  @HostListener('touchstart', ['$event'])
+  onTouchStart(event: TouchEvent) {
+    if (!this.mouseover) {
+      event.preventDefault()
+      this.mouseover = true
+    }
   }
 }

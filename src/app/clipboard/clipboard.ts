@@ -9,8 +9,10 @@ export interface ClipboardState {
   isLoading: boolean // Ensures clipboard is not read before history is loaded.
 }
 export class Clip {
+  id = Date.now() // TBD: Async action instead of giving a temporary ID?
   type = 'text/plain'
   text = ''
+  favourite: boolean
   constructor(clip?: Partial<Clip>) {
     if (clip != null) {
       Object.entries(clip).forEach(([prop, value]) => (this[prop] = value))
@@ -25,7 +27,9 @@ export const enum ActionTypes {
   SetEditingClipboard = '[Clipboard] SET_EDITING_CLIPBOARD',
   SetEditingText = '[Clipboard] SET_EDITING_TEXT',
   LoadHistory = '[Clipboard] LOAD_HISTORY',
-  AddToHistory = '[Clipboard] ADD_TO_HISTORY',
+  InsertClip = '[Clipboard] INSERT_CLIP',
+  UpdateClip = '[Clipboard] UPDATE_CLIP',
+  DeleteClip = '[Clipboard] DELETE_CLIP',
   NotImplemented = '[Clipboard] NOT_IMPLEMENTED'
 }
 export class SetReadPermission implements Action {
@@ -52,43 +56,57 @@ export class LoadHistory implements Action {
   readonly type = ActionTypes.LoadHistory
   constructor(public history: Clip[]) {}
 }
-export class AddToHistory implements Action {
-  readonly type = ActionTypes.AddToHistory
+export class InsertClip implements Action {
+  readonly type = ActionTypes.InsertClip
   constructor(public clip: Clip) {}
+}
+export class UpdateClip implements Action {
+  readonly type = ActionTypes.UpdateClip
+  constructor(
+    public id: number,
+    public clip: Clip,
+    public stopEffects?: boolean
+  ) {}
+}
+export class DeleteClip implements Action {
+  readonly type = ActionTypes.DeleteClip
+  constructor(public id: number) {}
 }
 export class NotImplemented implements Action {
   readonly type = ActionTypes.NotImplemented
   constructor(public message?: string) {}
 }
 
-export const featureName = 'clipboard'
-export const selectFeature = createFeatureSelector<ClipboardState>(featureName)
+export const selectClipboard = 'clipboard'
+export const selectClipboardState = createFeatureSelector<ClipboardState>(
+  selectClipboard
+)
 
 export const getCurrentClip = createSelector(
-  selectFeature,
+  selectClipboardState,
   ({clip}) => clip
 )
 export const getReadPermissionStatus = createSelector(
-  selectFeature,
+  selectClipboardState,
   ({permissions}) => permissions.read
 )
 export const getWritePermissionStatus = createSelector(
-  selectFeature,
+  selectClipboardState,
   ({permissions}) => permissions.write
 )
 export const getIsEditingClipboard = createSelector(
-  selectFeature,
+  selectClipboardState,
   ({editing}) => editing
 )
 export const getHistory = createSelector(
-  selectFeature,
+  selectClipboardState,
   ({history}) => history
 )
 export const getEditingText = createSelector(
-  selectFeature,
+  selectClipboardState,
   ({editingText}) => editingText
 )
 export const getIsLoading = createSelector(
-  selectFeature,
+  selectClipboardState,
   ({isLoading}) => isLoading
 )

@@ -1,2 +1,26 @@
-<span>{{ clip.text }}</span>
-<!-- TODO - Clip quick options (ex. edit | delete) -->
+<span class="content" (click)="use.emit(clip?.text)">{{ clip.text }}</span>
+<div class="controls">
+  <ng-container
+    *ngIf="mouseover; then realControls; else fakeControls"
+  ></ng-container>
+</div>
+
+<ng-template #realControls>
+  <button class="icon-button" (click)="delete.emit()">
+    <i class="material-icons">delete</i>
+  </button>
+  <button
+    class="icon-button"
+    [ngClass]="{'colour-primary': clip?.favourite}"
+    (click)="favourite.emit()"
+  >
+    <i class="material-icons">{{
+      clip?.favourite ? 'favorite' : 'favorite_border'
+    }}</i>
+  </button>
+</ng-template>
+<ng-template #fakeControls>
+  <div class="icon-button colour-primary" *ngIf="clip?.favourite">
+    <i class="material-icons">favorite</i>
+  </div>
+</ng-template>

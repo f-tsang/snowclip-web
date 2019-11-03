@@ -1,10 +1,16 @@
+// TBD: Place this in styles.scss or rename to _root-variables.scss.
 :root {
+  --gap-size: 0.5rem;
+
   --primary-colour: #f5f5f5;
   --accent-colour: #1e88e5;
   --foreground-text-colour: rgba(0, 0, 0, 0.87);
   --background-colour: #212121;
-  --background-text-colour: #ffffff;
+  --background-text-colour: #fff;
+  --background-hover-colour: rgba(0, 0, 0, 0.1);
   --divider-colour: rgba(0, 0, 0, 0.06);
   --border-colour: rgba(0, 0, 0, 0.12);
-  --content-colour: #ffffff;
+  --content-colour: #fff;
+  --button-colour: #666;
+  --button-hover-colour: #333;
 }

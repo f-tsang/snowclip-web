@@ -1,10 +1,27 @@
+@import '../../shared/styles';
+
 :host {
-  padding: 0.5rem 1rem;
   display: grid;
+  grid: 'content controls' 1fr / 1fr max-content;
   user-select: none;
 
   &:hover {
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.1); // TEMPORARY.
+    background: var(--background-hover-colour);
   }
+}
+.content {
+  grid-area: content;
+  padding: 0.5rem 1rem;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+}
+.controls {
+  grid-area: controls;
+  margin-right: 0.5rem;
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 0.25rem;
 }

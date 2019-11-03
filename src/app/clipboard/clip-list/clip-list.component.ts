@@ -20,16 +20,18 @@ import {
 import {ClipboardService} from 'src/app/clipboard.service'
 
 import {
-  AddToHistory,
   Clip,
+  DeleteClip,
   getCurrentClip,
   getEditingText,
   getHistory,
   getIsEditingClipboard,
   getIsLoading,
   getReadPermissionStatus,
+  InsertClip,
   SetClipboard,
-  SetEditingText
+  SetEditingText,
+  UpdateClip
 } from '../clipboard'
 
 @Component({
@@ -75,6 +77,14 @@ export class ClipListComponent implements OnInit, AfterViewInit {
       )
       .subscribe(() => this.store.dispatch(new SetClipboard(new Clip({text}))))
   }
+  deleteSnippet(clip: Clip) {
+    this.store.dispatch(new DeleteClip(clip.id))
+  }
+  toggleFavouriteSnippet(clip: Clip) {
+    this.store.dispatch(
+      new UpdateClip(clip.id, {...clip, favourite: !clip.favourite})
+    )
+  }
 
   refreshClipboard() {
     const readText$ = this.clipboard.readText().pipe(
@@ -97,7 +107,7 @@ export class ClipListComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (clip: Clip) => {
           this.store.dispatch(new SetClipboard(clip, true))
-          this.store.dispatch(new AddToHistory(clip))
+          this.store.dispatch(new InsertClip(clip))
         },
         error: () => this.store.dispatch(new SetClipboard(null))
       })

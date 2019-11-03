@@ -3,11 +3,11 @@ import {Store} from '@ngrx/store'
 import {distinctUntilChanged, filter, map, take} from 'rxjs/operators'
 
 import {
-  AddToHistory,
   Clip,
   ClipboardState,
   getCurrentClip,
   getEditingText,
+  InsertClip,
   SetClipboard,
   SetEditingClipboard,
   SetEditingText
@@ -37,7 +37,7 @@ export class ClipEditorComponent {
   saveSnippet(text = '') {
     const clip = new Clip({text})
     if (text !== '') {
-      this.store.dispatch(new AddToHistory(clip))
+      this.store.dispatch(new InsertClip(clip))
     }
     this.clipboardText
       .pipe(

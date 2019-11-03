@@ -1,10 +1,10 @@
 <header class="header">
   <span class="header-title">Scratchpad</span>
   <div class="header-controls controls" *ngIf="editingChange | async">
-    <button class="icon-button" (click)="reset()">
+    <button class="icon-button" title="Clear" (click)="reset()">
       <i class="material-icons">clear</i>
     </button>
-    <button class="icon-button" (click)="reset(editor.value)">
+    <button class="icon-button" title="Save" (click)="reset(editor.value)">
       <i class="material-icons colour-primary">done</i>
     </button>
   </div>
@@ -13,7 +13,7 @@
   rows="1"
   placeholder="Create a snippet..."
   (click)="editingChange.emit(true)"
-  (input)="resizeHeight()"
+  (input)="markForResize.next()"
   [(ngModel)]="value"
   #editor="ngModel"
 ></textarea>

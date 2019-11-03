@@ -5,18 +5,22 @@ import {Action, StoreModule} from '@ngrx/store'
 import {BackdropModule} from 'ft-backdrop'
 
 import {SharedModule} from '../shared/shared.module'
+import {ClipEditorComponent} from './clip-editor/clip-editor.component'
+import {ClipListComponent} from './clip-list/clip-list.component'
 import {ClipComponent} from './clip/clip.component'
 import {
   ActionTypes,
-  AddToHistory,
   ClipboardState,
-  featureName as clipboardFeature,
+  DeleteClip,
+  InsertClip,
   LoadHistory,
+  selectClipboard,
   SetClipboard,
   SetEditingClipboard,
   SetEditingText,
   SetReadPermission,
-  SetWritePermission
+  SetWritePermission,
+  UpdateClip
 } from './clipboard'
 import {ClipboardRoutingModule} from './clipboard-routing.module'
 import {ClipboardComponent} from './clipboard.component'
@@ -25,12 +29,17 @@ import { ClipListComponent } from './clip-list/clip-list.component';
 import { ClipEditorComponent } from './clip-editor/clip-editor.component'
 
 @NgModule({
-  declarations: [ClipboardComponent, ClipComponent, ClipListComponent, ClipEditorComponent],
+  declarations: [
+    ClipboardComponent,
+    ClipComponent,
+    ClipListComponent,
+    ClipEditorComponent
+  ],
   imports: [
     ClipboardRoutingModule,
     CommonModule,
     SharedModule,
-    StoreModule.forFeature(clipboardFeature, clipboardReducer),
+    StoreModule.forFeature(selectClipboard, reducer),
     EffectsModule.forFeature([ClipboardEffects]),
     BackdropModule
   ]
@@ -45,10 +54,7 @@ const initialState: ClipboardState = {
   history: [],
   isLoading: true
 }
-function clipboardReducer(
-  state = initialState,
-  action: Action
-): ClipboardState {
+export function reducer(state = initialState, action: Action): ClipboardState {
   switch (action.type) {
     case ActionTypes.SetReadPermission: {
       const {status: read} = action as SetReadPermission
@@ -74,9 +80,21 @@ function clipboardReducer(
       const {history} = action as LoadHistory
       return {...state, history, isLoading: false}
     }
-    case ActionTypes.AddToHistory: {
-      const {clip} = action as AddToHistory
+    case ActionTypes.InsertClip: {
+      const {clip} = action as InsertClip
       return {...state, history: [clip, ...state.history]}
+    }
+    case ActionTypes.UpdateClip: {
+      const {id, clip: newClip} = action as UpdateClip
+      const history = state.history.map(clip =>
+        clip.id === id ? newClip : clip
+      )
+      return {...state, history}
+    }
+    case ActionTypes.DeleteClip: {
+      const {id} = action as DeleteClip
+      const history = state.history.filter(clip => clip.id !== id)
+      return {...state, history}
     }
     default:
       return state

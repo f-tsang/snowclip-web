@@ -10,6 +10,7 @@ import {Component} from '@angular/core'
     .
   */
   template: `
+    <clip-app-bar [title]="title"></clip-app-bar>
     <ft-backdrop>
       <main>
         <clip-editor></clip-editor>
@@ -19,4 +20,6 @@ import {Component} from '@angular/core'
   `,
   styleUrls: ['./clipboard.component.scss']
 })
-export class ClipboardComponent {}
+export class ClipboardComponent {
+  title = 'Snowclip'
+}

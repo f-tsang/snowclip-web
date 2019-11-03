@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core'
 import {Actions, Effect, ofType} from '@ngrx/effects'
-import {EMPTY} from 'rxjs'
+import {of} from 'rxjs'
 import {
   catchError,
   concatMap,
   filter,
+  map,
+  mapTo,
   mergeMap,
   pluck,
   switchMap
@@ -15,10 +17,13 @@ import {fromIdbRequest, TABLE_NAMES} from '../database'
 import {DatabaseService} from '../database.service'
 import {
   ActionTypes,
-  AddToHistory,
   Clip,
+  DeleteClip,
+  InsertClip,
+  NotImplemented,
   SetClipboard,
-  SetWritePermission
+  SetWritePermission,
+  UpdateClip
 } from './clipboard'
 
 @Injectable()
@@ -31,10 +36,21 @@ export class ClipboardEffects {
     filter<string>(Boolean),
     switchMap(text => this.writeToClipboard(text))
   )
+  @Effect()
+  insertSnippet$ = this.actions.pipe(
+    ofType<InsertClip>(ActionTypes.InsertClip),
+    concatMap(({clip}) => this.insertSnippet(clip))
+  )
   @Effect({dispatch: false})
-  saveSnippet$ = this.actions.pipe(
-    ofType<AddToHistory>(ActionTypes.AddToHistory),
-    concatMap(({clip}) => this.saveSnippet(clip))
+  updateSnippet$ = this.actions.pipe(
+    ofType<UpdateClip>(ActionTypes.UpdateClip),
+    filter(({stopEffects}) => !stopEffects),
+    concatMap(({id, clip}) => this.updateSnippet(id, clip))
+  )
+  @Effect({dispatch: false})
+  deleteSnippet$ = this.actions.pipe(
+    ofType<DeleteClip>(ActionTypes.DeleteClip),
+    concatMap(({id}) => this.deleteSnippet(id))
   )
 
   constructor(
@@ -51,17 +67,42 @@ export class ClipboardEffects {
       })
     )
   }
-  saveSnippet(clip: Clip) {
+  insertSnippet(clip: Clip) {
+    return this.db.transaction.pipe(
+      map(tx => [tx.objectStore(TABLE_NAMES.history)]),
+      mergeMap(([historyStore]) =>
+        fromIdbRequest<number>(historyStore.add(clip)).pipe(
+          map(id => [historyStore, id])
+        )
+      ),
+      mergeMap(([historyStore, id]: [IDBObjectStore, number]) => {
+        const newClip = {...clip, id}
+        return fromIdbRequest(historyStore.put(newClip, id)).pipe(
+          mapTo(newClip)
+        )
+      }),
+      map((newClip: Clip) => new UpdateClip(clip.id, newClip, true)),
+      catchError(({message}) => of(new NotImplemented(message)))
+    )
+  }
+  updateSnippet(id: number, clip: Clip) {
     return this.db.transaction.pipe(
       mergeMap(tx => {
         const historyStore = tx.objectStore(TABLE_NAMES.history)
-        return fromIdbRequest<number>(historyStore.add(clip)).pipe(
-          mergeMap(id => fromIdbRequest(historyStore.put({...clip, id}, id)))
-        )
+        const updateRequest = historyStore.put(clip, id)
+        return fromIdbRequest(updateRequest)
       }),
-      catchError(
-        err => (console.error('IndexedDB: transaction aborted', err), EMPTY)
-      )
+      catchError(({message}) => of(new NotImplemented(message)))
+    )
+  }
+  deleteSnippet(id: number) {
+    return this.db.transaction.pipe(
+      mergeMap(tx => {
+        const historyStore = tx.objectStore(TABLE_NAMES.history)
+        const deleteRequest = historyStore.delete(id)
+        return fromIdbRequest(deleteRequest)
+      }),
+      catchError(({message}) => of(new NotImplemented(message)))
     )
   }
 }

@@ -8,14 +8,15 @@
   width: 100%;
   // ---
   display: grid;
-  grid:
-    'header' 2.5rem
-    'editor' 1fr / 1fr;
-  gap: 0.5rem;
+  grid-template-areas: 'header' 'editor';
+  grid-template-rows: 2.5rem 1fr;
+  grid-template-columns: 1fr;
+  gap: var(--gap-size, 0.5rem);
   min-height: 3.5rem;
 }
 textarea {
   grid-area: editor;
+  margin: 0 1rem;
   padding: calc(1rem - 1px);
   border: 1px solid var(--border-colour);
   border-radius: 0.5rem;
@@ -23,9 +24,13 @@ textarea {
   resize: none;
   font: inherit;
   overflow: auto;
+
+  @media (min-width: 720px) {
+    margin: 0;
+  }
 }
 .controls {
   display: grid;
   grid-auto-flow: column;
-  gap: 0.5rem;
+  gap: var(--gap-size, 0.5rem);
 }

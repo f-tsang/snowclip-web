@@ -8,9 +8,9 @@
   width: 100%;
   // ---
   display: grid;
-  grid:
-    'header' 2.5rem
-    'history' min-content / 1fr;
+  grid-template-areas: 'header' 'history';
+  grid-template-rows: 2.5rem min-content;
+  grid-template-columns: 1fr;
   gap: 0.5rem;
 
   > header {
@@ -23,10 +23,13 @@
   gap: 0.5rem;
   border-radius: 1.25rem;
 }
-.clipboard-read {
-  color: var(--accent-colour);
-}
 .clip-list {
+  // WIP
+  display: grid;
+  grid-auto-rows: minmax(48px, max-content);
+  grid-auto-flow: row;
+  // ---
+  margin: 0 1rem 0.5rem;
   grid-area: history;
   border: 1px solid var(--border-colour);
   padding: 0.25rem 0;
@@ -34,16 +37,19 @@
   background: var(--content-colour);
 
   > :first-child {
-    border-radius: 0.25rem 0.25rem 0 0;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
   }
   > :last-child {
-    border-radius: 0 0 0.25rem 0.25rem;
-  }
-  > :only-child {
-    border-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
   }
   > :not(:last-child) {
     border-bottom: 1px solid var(--divider-colour);
+  }
+
+  @media (min-width: 720px) {
+    margin: 0 0 0.5rem;
   }
 }
 .emptyListState {

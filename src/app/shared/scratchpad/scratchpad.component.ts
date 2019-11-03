@@ -4,31 +4,46 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core'
+import {Subject} from 'rxjs'
+import {debounceTime, filter} from 'rxjs/operators'
 
 @Component({
   selector: 'clip-scratchpad',
   templateUrl: './scratchpad.component.html',
   styleUrls: ['./scratchpad.component.scss']
 })
-export class ScratchpadComponent implements OnChanges {
+export class ScratchpadComponent implements OnChanges, OnDestroy {
   @Input() editing = false
   @Input() value = ''
   @Output() clear = new EventEmitter<void>()
   @Output() done = new EventEmitter<string>()
   @Output() editingChange = new EventEmitter<boolean>()
   @Output() valueChange = new EventEmitter<string>()
+  @ViewChild('editor', {read: ElementRef}) private editor: ElementRef
+  markForResize = new Subject<void>()
 
-  @ViewChild('editor', {read: ElementRef, static: false})
-  private editor: ElementRef
+  private markForResizeSub = this.markForResize // TODO - ngOnDestroy
+    .pipe(
+      debounceTime(100),
+      filter(() => this.editor && this.editor.nativeElement)
+    )
+    .subscribe(() => {
+      this.editor.nativeElement.style.height = `` // Excludes the old height.
+      this.editor.nativeElement.style.height = `${this.editor.nativeElement.scrollHeight}px`
+    })
 
   ngOnChanges(changes: SimpleChanges) {
     if ('value' in changes) {
-      setTimeout(() => this.resizeHeight()) // Resize after content changes.
+      this.markForResize.next()
     }
+  }
+  ngOnDestroy() {
+    this.markForResizeSub.unsubscribe()
   }
 
   reset(emitValue?: string) {
@@ -39,12 +54,13 @@ export class ScratchpadComponent implements OnChanges {
     } else {
       this.clear.emit()
     }
-    this.resizeHeight()
+    this.markForResize.next()
   }
-  resizeHeight() {
-    if (this.editor && this.editor.nativeElement) {
-      this.editor.nativeElement.style.height = `` // Excludes the old height.
-      this.editor.nativeElement.style.height = `${this.editor.nativeElement.scrollHeight}px`
+
+  private setValue(value: string) {
+    if (typeof value === 'string') {
+      this.value = value
+      this.valueChange.emit(value)
     }
   }
 

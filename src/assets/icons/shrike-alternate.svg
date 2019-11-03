@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="460" height="388" version="1.1" viewBox="0 0 121.71 102.66" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <title>Northern Strike</title>
+  <metadata>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dc:title>Northern Strike</dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Frederick Tsang</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path d="m32.147 70.265c-10.362 4.9983-18.3 9.5516-25.265 20.859 9.083-6.2136 14.947-7.2606 24.533-6.221" fill="none" stroke="#fffff5" stroke-linecap="round" stroke-miterlimit="8" stroke-width="4.146" style="paint-order:normal"/>
+  <path d="m84.372 51.34c2.8928-8.3829 2.5261-24.64 22.616-18.069l-0.0945 0.18899 9.8788-2.3213c-10.127-8.4563-19.399-9.3426-31.961-9.5663 3.1628-5.595 14.043-9.5416 22.666-6.8704-3.4471-10.641-8.258-12.149-16.046-12.094-17.945 0.12773-17.918 17.595-26.115 30.284-13.403 5.8637-13.403 5.8637 0 0-17.204 3.4496-31.546 20.429-24.462 41.283 15.977-5.2992 34.662 3.0034 43.518-22.836z" fill="#8080c4"/>
+  <path d="m59.164 36.266c20.114-7.9307 6.7515-29.974 30.333-33.866 13.701-2.2613 22.308 16.542 30.58 31.208-8.572-2.5789-13.031-0.99681-15.536 3.4986-1.6435 2.9483 6.8669 8.4219 5.5487 23.669-1.3098 15.15-9.0739 23.354-19.32 28.562-14.07 7.1522-31.84 1.862-47.321-1.6805" fill="none" stroke="#fffff5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="8" stroke-width="4.146" style="paint-order:normal"/>
+  <path d="m59.164 36.266c-27.529 9.8338-30.45 38.039-26.309 61.394 18.541-24.179 44.628-16.595 50.354-48.939l-7.2648 0.085" fill="none" stroke="#fffff5" stroke-linecap="round" stroke-miterlimit="8" stroke-width="4.146"/>
+</svg>

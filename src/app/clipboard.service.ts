@@ -81,7 +81,7 @@ export class ClipboardService {
       pluck('state'),
       withLatestFrom(this.readPermission),
       tap(([state, readable]: [string, boolean]) => {
-        const permission = this.isPermissible(state)
+        const permission = state === 'granted'
         if (permission !== readable) {
           this.store.dispatch(new SetReadPermission(permission))
         }
@@ -94,7 +94,7 @@ export class ClipboardService {
       pluck('state'),
       withLatestFrom(this.writePermission),
       tap(([state, writeable]: [string, boolean]) => {
-        const permission = this.isPermissible(state)
+        const permission = state === 'granted'
         if (permission !== writeable) {
           this.store.dispatch(new SetWritePermission(permission))
         }

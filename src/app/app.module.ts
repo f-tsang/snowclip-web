@@ -8,7 +8,8 @@ import {StoreDevtoolsModule} from '@ngrx/store-devtools'
 import {environment} from '../environments/environment'
 import {AppRoutingModule} from './app-routing.module'
 import {AppComponent} from './app.component'
-import {SharedModule} from './shared/shared.module'
+import {SharedModule} from './shared/shared.module';
+import { ServiceWorkerModule } from '@angular/service-worker'
 
 const storeOptions = {
   runtimeChecks: {
@@ -30,7 +31,8 @@ const devtoolOptions = {
     EffectsModule.forRoot([]),
     StoreDevtoolsModule.instrument(devtoolOptions),
     AppRoutingModule,
-    SharedModule.forRoot()
+    SharedModule.forRoot(),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [],
   bootstrap: [AppComponent]
