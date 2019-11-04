@@ -16,15 +16,13 @@
     </div>
   </div>
 </header>
-<div class="clip-list" *ngIf="(clips | async)?.length > 0; else emptyListState">
-  <clip-clip
-    *ngFor="let clip of clips | async"
-    [clip]="clip"
-    (use)="useSnippet($event)"
-    (delete)="deleteSnippet(clip)"
-    (favourite)="toggleFavouriteSnippet(clip)"
-    (mousedown)="$event.preventDefault()"
-  ></clip-clip>
+<div
+  class="clip-list"
+  *ngIf="(clips | async)?.length > 0; else emptyListState"
+  (mousedown)="$event.preventDefault()"
+  (touchend)="$event.preventDefault()"
+>
+  <clip-clip *ngFor="let clip of clips | async" [clip]="clip"></clip-clip>
 </div>
 <ng-template #emptyListState>
   <div class="emptyListState">Your saved snippets will show up here.</div>

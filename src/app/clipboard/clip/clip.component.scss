@@ -1,27 +1,50 @@
 @import '../../shared/styles';
 
 :host {
+  position: relative;
   display: grid;
-  grid: 'content controls' 1fr / 1fr max-content;
+  grid-template-areas: 'content controls';
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr max-content;
+  align-items: center;
   user-select: none;
 
   &:hover {
     cursor: pointer;
     background: var(--background-hover-colour);
+
+    .view-controls {
+      visibility: hidden;
+    }
+    .hover-controls {
+      display: grid;
+    }
   }
 }
 .content {
   grid-area: content;
   padding: 0.5rem 1rem;
-  display: grid;
-  align-items: center;
   overflow: hidden;
 }
-.controls {
-  grid-area: controls;
-  margin-right: 0.5rem;
+.control-block {
+  padding: 0 0.5rem;
   display: grid;
   grid-auto-flow: column;
   align-items: center;
   gap: 0.25rem;
+}
+.view-controls {
+  visibility: visible;
+}
+.hover-controls {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  display: none;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: end;
+  background: #000;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #e5e5e5 25%);
 }

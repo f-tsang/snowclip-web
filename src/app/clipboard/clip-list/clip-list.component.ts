@@ -1,11 +1,5 @@
 import {DOCUMENT} from '@angular/common'
-import {
-  AfterViewInit,
-  Component,
-  HostListener,
-  Inject,
-  OnInit
-} from '@angular/core'
+import {AfterViewInit, Component, HostListener, Inject} from '@angular/core'
 import {Store} from '@ngrx/store'
 import {combineLatest} from 'rxjs'
 import {
@@ -21,17 +15,14 @@ import {ClipboardService} from 'src/app/clipboard.service'
 
 import {
   Clip,
-  DeleteClip,
   getCurrentClip,
-  getEditingText,
   getHistory,
   getIsEditingClipboard,
   getIsLoading,
   getReadPermissionStatus,
   InsertClip,
   SetClipboard,
-  SetEditingText,
-  UpdateClip
+  SetEditingText
 } from '../clipboard'
 
 @Component({
@@ -39,10 +30,9 @@ import {
   templateUrl: './clip-list.component.html',
   styleUrls: ['./clip-list.component.scss']
 })
-export class ClipListComponent implements OnInit, AfterViewInit {
+export class ClipListComponent implements AfterViewInit {
   clips = this.store.select(getHistory)
   isEditing = this.store.select(getIsEditingClipboard)
-  editingText = this.store.select(getEditingText)
   buffer = this.store.select(getCurrentClip).pipe(
     map(clip => (clip && clip.text) || ''),
     distinctUntilChanged()
@@ -56,34 +46,10 @@ export class ClipListComponent implements OnInit, AfterViewInit {
     private store: Store<any>
   ) {}
 
-  ngOnInit() {}
   ngAfterViewInit() {
     if (this.document.hasFocus()) {
       this.softRefreshClipboard()
     }
-  }
-
-  useSnippet(text = '') {
-    combineLatest(this.isEditing, this.editingText)
-      .pipe(
-        take(1),
-        filter(([isEditing, editingText]) => !isEditing && editingText !== text)
-      )
-      .subscribe(() => this.store.dispatch(new SetEditingText(text)))
-    this.buffer
-      .pipe(
-        take(1),
-        filter(buffer => buffer !== text)
-      )
-      .subscribe(() => this.store.dispatch(new SetClipboard(new Clip({text}))))
-  }
-  deleteSnippet(clip: Clip) {
-    this.store.dispatch(new DeleteClip(clip.id))
-  }
-  toggleFavouriteSnippet(clip: Clip) {
-    this.store.dispatch(
-      new UpdateClip(clip.id, {...clip, favourite: !clip.favourite})
-    )
   }
 
   refreshClipboard() {

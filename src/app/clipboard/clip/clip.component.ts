@@ -1,11 +1,6 @@
-import {
-  Component,
-  EventEmitter,
-  HostListener,
-  Input,
-  Output
-} from '@angular/core'
+import {Component, Input} from '@angular/core'
 
+import {ClipService} from '../clip.service'
 import {Clip} from '../clipboard'
 
 /**
@@ -20,24 +15,16 @@ import {Clip} from '../clipboard'
 })
 export class ClipComponent {
   @Input() clip: Clip
-  @Output() use = new EventEmitter<string>()
-  @Output() delete = new EventEmitter<void>()
-  @Output() favourite = new EventEmitter<void>()
-  mouseover = false
 
-  @HostListener('mouseenter')
-  onMouseEnter() {
-    this.mouseover = true
+  constructor(private clipService: ClipService) {}
+
+  use(text = '') {
+    this.clipService.useSnippet(text)
   }
-  @HostListener('mouseleave')
-  onMouseLeave() {
-    this.mouseover = false
+  delete() {
+    this.clipService.deleteSnippet(this.clip)
   }
-  @HostListener('touchstart', ['$event'])
-  onTouchStart(event: TouchEvent) {
-    if (!this.mouseover) {
-      event.preventDefault()
-      this.mouseover = true
-    }
+  favourite() {
+    this.clipService.toggleFavouriteSnippet(this.clip)
   }
 }
