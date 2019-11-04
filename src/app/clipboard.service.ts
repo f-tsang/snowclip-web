@@ -5,13 +5,13 @@ import {
   catchError,
   filter,
   map,
+  mapTo,
   mergeMap,
-  pluck,
+  switchMap,
   take,
   tap,
   throwIfEmpty,
-  toArray,
-  withLatestFrom
+  toArray
 } from 'rxjs/operators'
 
 import {
@@ -52,6 +52,7 @@ export class ClipboardService {
   ) {
     if ('navigator' in this.window && 'clipboard' in this.window.navigator) {
       this.clipboard = of(this.window.navigator.clipboard)
+      // TBD: Consider moving the loading of past states elsewhere.
       this.db.transaction
         .pipe(
           mergeMap(tx => {
@@ -70,6 +71,7 @@ export class ClipboardService {
           this.store.dispatch(new SetClipboard(new Clip(clips[0]), true))
           this.store.dispatch(new LoadHistory(clips))
         })
+      // Gets the current clipboard read and write permissions.
       merge(this.getReadPermission(), this.getWritePermission()).subscribe()
     } else {
       this.clipboard = throwError(new Error('Clipboard API not supported.'))
@@ -77,30 +79,24 @@ export class ClipboardService {
   }
 
   getReadPermission() {
-    return this.permissions.query({name: 'clipboard-read'}).pipe(
-      pluck('state'),
-      withLatestFrom(this.readPermission),
-      tap(([state, readable]: [string, boolean]) => {
-        const permission = state === 'granted'
-        if (permission !== readable) {
-          this.store.dispatch(new SetReadPermission(permission))
-        }
-      }),
-      map(([state]) => state)
-    )
+    return this.permissions
+      .query({name: 'clipboard-read'})
+      .pipe(switchMap(({state}) => this.setReadPermission(state)))
   }
   getWritePermission() {
-    return this.permissions.query({name: 'clipboard-write'}).pipe(
-      pluck('state'),
-      withLatestFrom(this.writePermission),
-      tap(([state, writeable]: [string, boolean]) => {
-        const permission = state === 'granted'
-        if (permission !== writeable) {
-          this.store.dispatch(new SetWritePermission(permission))
-        }
-      }),
-      map(([state]) => state)
-    )
+    return this.permissions
+      .query({name: 'clipboard-write'})
+      .pipe(switchMap(({state}) => this.setWritePermission(state)))
+  }
+  revokeReadPermission() {
+    return this.permissions
+      .revoke({name: 'clipboard-read'})
+      .pipe(switchMap(({state}) => this.setReadPermission(state)))
+  }
+  revokeWritePermission() {
+    return this.permissions
+      .revoke({name: 'clipboard-write'})
+      .pipe(switchMap(({state}) => this.setWritePermission(state)))
   }
 
   /**
@@ -180,5 +176,29 @@ export class ClipboardService {
       console.warn(message)
     }
     return of(true)
+  }
+  private setReadPermission(state: string) {
+    return this.readPermission.pipe(
+      take(1),
+      tap(readable => {
+        const permission = state === 'granted'
+        if (permission !== readable) {
+          this.store.dispatch(new SetReadPermission(permission))
+        }
+      }),
+      mapTo(state)
+    )
+  }
+  private setWritePermission(state: string) {
+    return this.readPermission.pipe(
+      take(1),
+      tap(writable => {
+        const permission = state === 'granted'
+        if (permission !== writable) {
+          this.store.dispatch(new SetWritePermission(permission))
+        }
+      }),
+      mapTo(state)
+    )
   }
 }

@@ -5,13 +5,17 @@
     <div
       class="button clipboard-button"
       title="Read clipboard"
-      (click)="refreshClipboard()"
+      (click)="toggleClipboard()"
     >
-      <i
-        class="material-icons"
-        [ngClass]="{'colour-primary': readPermission | async}"
-        >toggle_off</i
-      >
+      <ng-container
+        *ngIf="clipboardReadable | async; then toggleOn; else toggleOff"
+      ></ng-container>
+      <ng-template #toggleOn>
+        <i class="material-icons colour-primary">toggle_on</i>
+      </ng-template>
+      <ng-template #toggleOff>
+        <i class="material-icons">toggle_off</i>
+      </ng-template>
       <i class="material-icons">assignment</i>
     </div>
   </div>

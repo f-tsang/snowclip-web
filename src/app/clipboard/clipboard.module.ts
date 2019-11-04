@@ -15,6 +15,7 @@ import {
   InsertClip,
   LoadHistory,
   selectClipboard,
+  SetAllowClipboardRead,
   SetClipboard,
   SetEditingClipboard,
   SetEditingText,
@@ -52,7 +53,8 @@ const initialState: ClipboardState = {
   editing: false,
   editingText: '',
   history: [],
-  isLoading: true
+  isLoading: true,
+  allowReadClipboard: true
 }
 export function reducer(state = initialState, action: Action): ClipboardState {
   switch (action.type) {
@@ -95,6 +97,10 @@ export function reducer(state = initialState, action: Action): ClipboardState {
       const {id} = action as DeleteClip
       const history = state.history.filter(clip => clip.id !== id)
       return {...state, history}
+    }
+    case ActionTypes.SetAllowClipboardRead: {
+      const {allowed: allowReadClipboard} = action as SetAllowClipboardRead
+      return {...state, allowReadClipboard}
     }
     default:
       return state

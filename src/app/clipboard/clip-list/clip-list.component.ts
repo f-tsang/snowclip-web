@@ -7,20 +7,21 @@ import {
   filter,
   map,
   pluck,
-  publishLast,
-  refCount,
+  share,
   take
 } from 'rxjs/operators'
 import {ClipboardService} from 'src/app/clipboard.service'
 
 import {
   Clip,
+  getAllowReadClipboard,
   getCurrentClip,
   getHistory,
   getIsEditingClipboard,
   getIsLoading,
   getReadPermissionStatus,
   InsertClip,
+  SetAllowClipboardRead,
   SetClipboard,
   SetEditingText
 } from '../clipboard'
@@ -39,6 +40,11 @@ export class ClipListComponent implements AfterViewInit {
   )
   isLoading = this.store.select(getIsLoading)
   readPermission = this.store.select(getReadPermissionStatus)
+  readAllowed = this.store.select(getAllowReadClipboard)
+  clipboardReadable = combineLatest([
+    this.readAllowed,
+    this.readPermission
+  ]).pipe(map(([allowed, permissible]) => allowed && permissible))
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -52,19 +58,26 @@ export class ClipListComponent implements AfterViewInit {
     }
   }
 
+  toggleClipboard() {
+    this.readAllowed.pipe(take(1)).subscribe(allowed => {
+      if (allowed) {
+        this.store.dispatch(new SetAllowClipboardRead(false))
+      } else {
+        this.store.dispatch(new SetAllowClipboardRead(true))
+        this.refreshClipboard()
+      }
+    })
+  }
   refreshClipboard() {
-    const readText$ = this.clipboard.readText().pipe(
-      publishLast(),
-      refCount()
-    )
-    combineLatest(readText$, this.isEditing)
+    const readText$ = this.clipboard.readText().pipe(share())
+    combineLatest([readText$, this.isEditing])
       .pipe(
         take(1),
         filter(([_, editing]) => !editing),
         pluck(0, 'text')
       )
       .subscribe(text => this.store.dispatch(new SetEditingText(text)))
-    combineLatest(readText$, this.buffer)
+    combineLatest([readText$, this.buffer])
       .pipe(
         take(1),
         filter(([clip, buffer]) => clip && clip.text !== buffer),
@@ -81,16 +94,17 @@ export class ClipListComponent implements AfterViewInit {
 
   @HostListener('window:focus')
   private softRefreshClipboard() {
-    combineLatest(
+    combineLatest([
+      this.readAllowed,
       this.isLoading,
       this.isEditing,
       this.clipboard.getReadPermission()
-    )
+    ])
       .pipe(
         take(1),
         filter(
-          ([loading, editing, state]) =>
-            !loading && !editing && state === 'granted'
+          ([readable, loading, editing, state]) =>
+            readable && !loading && !editing && state === 'granted'
         )
       )
       .subscribe(() => this.refreshClipboard())

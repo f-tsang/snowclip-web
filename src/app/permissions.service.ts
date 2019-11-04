@@ -10,41 +10,56 @@ export class NotSupportedError extends Error {
 
 /**
  * TODO - Move into CoreModule
+ * NOTE: PermissionDescriptor incorrectly lists clipboard instead of clipboard-read.
  */
 @Injectable({
   providedIn: 'root'
 })
 export class PermissionsService {
-  // @ts-ignore
   private permissions: Observable<Permissions>
 
   constructor(private window: Window) {
     if ('navigator' in this.window && 'permissions' in this.window.navigator) {
-      // @ts-ignore
       this.permissions = of(this.window.navigator.permissions)
     } else {
       this.permissions = throwError(new NotSupportedError())
     }
   }
 
-  // NOTE: Descripter includes clipboard instead of clipboard-read.
   query(
-    // @ts-ignore
     queryOptions: PermissionDescriptor | any,
     continueUnsupported?: boolean
   ) {
-    const continueIfUnsupported = catchError(err => {
-      if (!(continueUnsupported && err instanceof NotSupportedError)) {
-        throw err
-      }
-      return of({
-        state: 'granted',
-        onchange: null
-      })
-    })
     return this.permissions.pipe(
       mergeMap(permissions => permissions.query(queryOptions)),
-      continueIfUnsupported
+      continueIfUnsupported(continueUnsupported, 'granted')
     )
   }
+  /**
+   * NOTE: Do not use. Not supported by default (even on Chrome).
+   */
+  revoke(
+    queryOptions: PermissionDescriptor | any,
+    continueUnsupported?: boolean
+  ) {
+    return this.permissions.pipe(
+      mergeMap(permissions => {
+        if (!('revoke' in permissions)) {
+          throw new NotSupportedError()
+        }
+        // @ts-ignore
+        return permissions.revoke(queryOptions)
+      }),
+      continueIfUnsupported(continueUnsupported, 'prompt')
+    )
+  }
+}
+
+function continueIfUnsupported(continueUnsupported: boolean, state: string) {
+  return catchError(err => {
+    if (!(continueUnsupported && err instanceof NotSupportedError)) {
+      throw err
+    }
+    return of({state, onchange: null})
+  })
 }
