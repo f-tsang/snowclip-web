@@ -2,7 +2,7 @@
   "name": "Snowclip",
   "short_name": "Snowclip",
   "description": "A clipboard manager for the web.",
-  "theme_color": "#1976d2",
+  "theme_color": "#212121",
   "background_color": "#fafafa",
   "dir": "ltr",
   "lang": "English",
