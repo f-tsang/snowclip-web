@@ -6,7 +6,6 @@ import {
   concatMap,
   filter,
   map,
-  mapTo,
   mergeMap,
   pluck,
   switchMap
@@ -68,20 +67,14 @@ export class ClipboardEffects {
     )
   }
   insertSnippet(clip: Clip) {
+    const newClip = {...clip}
+    delete newClip.id
     return this.db.transaction.pipe(
-      map(tx => [tx.objectStore(TABLE_NAMES.history)]),
-      mergeMap(([historyStore]) =>
-        fromIdbRequest<number>(historyStore.add(clip)).pipe(
-          map(id => [historyStore, id])
-        )
-      ),
-      mergeMap(([historyStore, id]: [IDBObjectStore, number]) => {
-        const newClip = {...clip, id}
-        return fromIdbRequest(historyStore.put(newClip, id)).pipe(
-          mapTo(newClip)
-        )
+      mergeMap(tx => {
+        const historyStore = tx.objectStore(TABLE_NAMES.history)
+        return fromIdbRequest<number>(historyStore.add(newClip))
       }),
-      map((newClip: Clip) => new UpdateClip(clip.id, newClip, true)),
+      map(id => new UpdateClip(id, {...newClip, id}, true)),
       catchError(({message}) => of(new NotImplemented(message)))
     )
   }

@@ -22,16 +22,20 @@ export enum DatabaseInfo {
 }
 
 export const TABLE_NAMES = {
-  history: 'history',
-  clipped: 'clipped'
+  appdata: 'appdata',
+  history: 'history'
 }
 export const TABLE_PRIMAY_KEYS = {
-  [TABLE_NAMES.history]: {autoIncrement: true},
-  [TABLE_NAMES.clipped]: {keyPath: 'text'}
+  [TABLE_NAMES.appdata]: {keyPath: 'key'},
+  [TABLE_NAMES.history]: {keyPath: 'id', autoIncrement: true}
 }
 export const TABLE_INDEXES = {
-  [TABLE_NAMES.history]: [['text', 'text'], ['type', 'type']],
-  [TABLE_NAMES.clipped]: [['text', 'text', {unique: true}]]
+  [TABLE_NAMES.appdata]: [['key', 'key', {unique: true}]],
+  [TABLE_NAMES.history]: [
+    ['text', 'text'],
+    ['type', 'type'],
+    ['favourite', 'favourite']
+  ]
 }
 
 export class ExistingConnectionError extends Error {
