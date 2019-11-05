@@ -19,7 +19,9 @@ import {
   SetClipboard,
   SetEditingClipboard,
   SetEditingText,
+  SetReadAvailibility,
   SetReadPermission,
+  SetWriteAvailibility,
   SetWritePermission,
   UpdateClip
 } from './clipboard'
@@ -48,7 +50,8 @@ import { ClipEditorComponent } from './clip-editor/clip-editor.component'
 export class ClipboardModule {}
 
 const initialState: ClipboardState = {
-  permissions: {read: false, write: false},
+  readPermission: {available: true, granted: false},
+  writePermission: {available: true, granted: false},
   clip: null,
   editing: false,
   editingText: '',
@@ -58,13 +61,21 @@ const initialState: ClipboardState = {
 }
 export function reducer(state = initialState, action: Action): ClipboardState {
   switch (action.type) {
+    case ActionTypes.SetReadAvailibility: {
+      const {available} = action as SetReadAvailibility
+      return {...state, readPermission: {...state.readPermission, available}}
+    }
+    case ActionTypes.SetWriteAvailibility: {
+      const {available} = action as SetWriteAvailibility
+      return {...state, writePermission: {...state.writePermission, available}}
+    }
     case ActionTypes.SetReadPermission: {
-      const {status: read} = action as SetReadPermission
-      return {...state, permissions: {...state.permissions, read}}
+      const {status: granted} = action as SetReadPermission
+      return {...state, readPermission: {...state.readPermission, granted}}
     }
     case ActionTypes.SetWritePermission: {
-      const {status: write} = action as SetWritePermission
-      return {...state, permissions: {...state.permissions, write}}
+      const {status: granted} = action as SetWritePermission
+      return {...state, writePermission: {...state.writePermission, granted}}
     }
     case ActionTypes.SetClipboard: {
       const {clip} = action as SetClipboard

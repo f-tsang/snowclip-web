@@ -22,7 +22,9 @@ import {
   LoadHistory,
   SetClipboard,
   SetEditingText,
+  SetReadAvailibility,
   SetReadPermission,
+  SetWriteAvailibility,
   SetWritePermission
 } from './clipboard/clipboard'
 import {fromIdbCursor, TABLE_NAMES} from './database'
@@ -79,14 +81,28 @@ export class ClipboardService {
   }
 
   getReadPermission() {
-    return this.permissions
-      .query({name: 'clipboard-read'})
-      .pipe(switchMap(({state}) => this.setReadPermission(state)))
+    return this.permissions.query({name: 'clipboard-read'}).pipe(
+      switchMap(({state}) => this.setReadPermission(state)),
+      catchError(err => {
+        if (!(err instanceof TypeError)) {
+          throw err
+        }
+        this.store.dispatch(new SetReadAvailibility(false))
+        return EMPTY
+      })
+    )
   }
   getWritePermission() {
-    return this.permissions
-      .query({name: 'clipboard-write'})
-      .pipe(switchMap(({state}) => this.setWritePermission(state)))
+    return this.permissions.query({name: 'clipboard-write'}).pipe(
+      switchMap(({state}) => this.setWritePermission(state)),
+      catchError(err => {
+        if (!(err instanceof TypeError)) {
+          throw err
+        }
+        this.store.dispatch(new SetWriteAvailibility(false))
+        return EMPTY
+      })
+    )
   }
   revokeReadPermission() {
     return this.permissions
@@ -114,7 +130,7 @@ export class ClipboardService {
       catchError(this.continueWithWarning.bind(this)),
       throwIfEmpty(() => new Error('Clipboard read permission denied.'))
     )
-    const textClip$ = combineLatest(this.clipboard, isReadable$).pipe(
+    const textClip$ = combineLatest([this.clipboard, isReadable$]).pipe(
       take(1),
       mergeMap(([clipboard]) => clipboard.readText()),
       map(text => new Clip({text}))
@@ -137,7 +153,7 @@ export class ClipboardService {
       catchError(this.continueWithWarning.bind(this)),
       throwIfEmpty(() => new Error('Clipboard write permission denied.'))
     )
-    const writeToClipboard$ = combineLatest(this.clipboard, isWritable$).pipe(
+    const writeToClipboard$ = combineLatest([this.clipboard, isWritable$]).pipe(
       take(1),
       mergeMap(([clipboard]) => clipboard.writeText(text))
     )

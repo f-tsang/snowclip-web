@@ -19,6 +19,7 @@ import {
   getHistory,
   getIsEditingClipboard,
   getIsLoading,
+  getReadPermissionAvailibility,
   getReadPermissionStatus,
   InsertClip,
   SetAllowClipboardRead,
@@ -39,6 +40,7 @@ export class ClipListComponent implements AfterViewInit {
     distinctUntilChanged()
   )
   isLoading = this.store.select(getIsLoading)
+  readAvailable = this.store.select(getReadPermissionAvailibility)
   readPermission = this.store.select(getReadPermissionStatus)
   readAllowed = this.store.select(getAllowReadClipboard)
   clipboardReadable = combineLatest([

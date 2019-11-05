@@ -32,7 +32,7 @@ export class PermissionsService {
   ) {
     return this.permissions.pipe(
       mergeMap(permissions => permissions.query(queryOptions)),
-      continueIfUnsupported(continueUnsupported, 'granted')
+      continueIfUnsupported(continueUnsupported)
     )
   }
   /**
@@ -50,12 +50,12 @@ export class PermissionsService {
         // @ts-ignore
         return permissions.revoke(queryOptions)
       }),
-      continueIfUnsupported(continueUnsupported, 'prompt')
+      continueIfUnsupported(continueUnsupported)
     )
   }
 }
 
-function continueIfUnsupported(continueUnsupported: boolean, state: string) {
+function continueIfUnsupported(continueUnsupported: boolean, state = 'prompt') {
   return catchError(err => {
     if (!(continueUnsupported && err instanceof NotSupportedError)) {
       throw err

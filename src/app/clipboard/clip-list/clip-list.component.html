@@ -1,7 +1,6 @@
 <header class="header">
   <span class="header-title">Saved Snippets</span>
-  <!-- TODO - Remove button if not supported -->
-  <div class="header-controls">
+  <div class="header-controls" *ngIf="readAvailable | async">
     <div
       class="button clipboard-button"
       title="Read clipboard"
