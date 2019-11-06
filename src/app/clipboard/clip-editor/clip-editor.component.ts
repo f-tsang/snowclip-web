@@ -7,6 +7,7 @@ import {
   ClipboardState,
   getCurrentClip,
   getEditingText,
+  getIsEditingClipboard,
   InsertClip,
   SetClipboard,
   SetEditingClipboard,
@@ -25,6 +26,7 @@ import {
   `
 })
 export class ClipEditorComponent {
+  isEditing = this.store.select(getIsEditingClipboard)
   editingText = this.store.select(getEditingText)
   clipboardText = this.store.select(getCurrentClip).pipe(
     map(clip => (clip && clip.text) || ''),
@@ -51,6 +53,11 @@ export class ClipEditorComponent {
     this.store.dispatch(new SetEditingText(text))
   }
   updateEditingState(isEditing = false) {
-    this.store.dispatch(new SetEditingClipboard(isEditing))
+    this.isEditing
+      .pipe(
+        take(1),
+        filter(editing => editing !== isEditing)
+      )
+      .subscribe(() => this.store.dispatch(new SetEditingClipboard(isEditing)))
   }
 }

@@ -2,10 +2,12 @@ import {CommonModule} from '@angular/common'
 import {NgModule} from '@angular/core'
 import {EffectsModule} from '@ngrx/effects'
 import {Action, StoreModule} from '@ngrx/store'
-import {BackdropModule} from 'ft-backdrop'
 
 import {SharedModule} from '../shared/shared.module'
 import {ClipEditorComponent} from './clip-editor/clip-editor.component'
+import {
+  ClipFavouritesComponent
+} from './clip-favourites/clip-favourites.component'
 import {ClipListComponent} from './clip-list/clip-list.component'
 import {ClipComponent} from './clip/clip.component'
 import {
@@ -36,16 +38,17 @@ import { ClipEditorComponent } from './clip-editor/clip-editor.component'
     ClipboardComponent,
     ClipComponent,
     ClipListComponent,
-    ClipEditorComponent
+    ClipEditorComponent,
+    ClipFavouritesComponent
   ],
   imports: [
     ClipboardRoutingModule,
     CommonModule,
     SharedModule,
     StoreModule.forFeature(selectClipboard, reducer),
-    EffectsModule.forFeature([ClipboardEffects]),
-    BackdropModule
-  ]
+    EffectsModule.forFeature([ClipboardEffects])
+  ],
+  entryComponents: [ClipFavouritesComponent]
 })
 export class ClipboardModule {}
 

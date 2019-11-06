@@ -1,7 +1,7 @@
 <span class="content" (click)="use(clip?.text)">{{ clip.text }}</span>
 <div class="controls">
-  <div class="control-block view-controls">
-    <div class="icon-button colour-primary" *ngIf="clip?.favourite">
+  <div class="control-block view-controls" *ngIf="clip?.favourite">
+    <div class="icon-button colour-primary">
       <i class="material-icons">favorite</i>
     </div>
   </div>

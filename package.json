@@ -24,7 +24,7 @@
     "@ngrx/effects": "^8.4.0",
     "@ngrx/store": "^8.4.0",
     "@ngrx/store-devtools": "^8.4.0",
-    "ft-backdrop": "https://github.com/f-tsang/backdrop/releases/download/0.0.2/ft-backdrop-0.0.2.tgz",
+    "ft-backdrop": "https://github.com/f-tsang/backdrop/releases/download/0.0.3/ft-backdrop-0.0.3.tgz",
     "rxjs": "~6.5.3",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"

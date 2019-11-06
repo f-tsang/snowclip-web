@@ -23,7 +23,7 @@ export enum DatabaseInfo {
 
 export const TABLE_NAMES = {
   appdata: 'appdata',
-  history: 'history'
+  history: 'history' // NOTE: Index populates on add, so fav's can't be indexed.
 }
 export const TABLE_PRIMAY_KEYS = {
   [TABLE_NAMES.appdata]: {keyPath: 'key'},
@@ -31,11 +31,7 @@ export const TABLE_PRIMAY_KEYS = {
 }
 export const TABLE_INDEXES = {
   [TABLE_NAMES.appdata]: [['key', 'key', {unique: true}]],
-  [TABLE_NAMES.history]: [
-    ['text', 'text'],
-    ['type', 'type'],
-    ['favourite', 'favourite']
-  ]
+  [TABLE_NAMES.history]: [['text', 'text'], ['type', 'type']]
 }
 
 export class ExistingConnectionError extends Error {

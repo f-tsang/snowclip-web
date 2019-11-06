@@ -74,15 +74,16 @@ export class ClipboardEffects {
         const historyStore = tx.objectStore(TABLE_NAMES.history)
         return fromIdbRequest<number>(historyStore.add(newClip))
       }),
-      map(id => new UpdateClip(id, {...newClip, id}, true)),
+      map(id => new UpdateClip(clip.id, {...newClip, id}, true)),
       catchError(({message}) => of(new NotImplemented(message)))
     )
   }
+  // TBD: Open cursor on ID, update cursor with clip.
   updateSnippet(id: number, clip: Clip) {
     return this.db.transaction.pipe(
       mergeMap(tx => {
         const historyStore = tx.objectStore(TABLE_NAMES.history)
-        const updateRequest = historyStore.put(clip, id)
+        const updateRequest = historyStore.put(clip)
         return fromIdbRequest(updateRequest)
       }),
       catchError(({message}) => of(new NotImplemented(message)))

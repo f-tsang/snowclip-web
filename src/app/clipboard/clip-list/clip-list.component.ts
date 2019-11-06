@@ -7,13 +7,12 @@ import {
   filter,
   map,
   pluck,
-  share,
-  take
+  take,
+  tap
 } from 'rxjs/operators'
 import {ClipboardService} from 'src/app/clipboard.service'
 
 import {
-  Clip,
   getAllowReadClipboard,
   getCurrentClip,
   getHistory,
@@ -53,12 +52,23 @@ export class ClipListComponent implements AfterViewInit {
     private clipboard: ClipboardService,
     private store: Store<any>
   ) {}
-
   ngAfterViewInit() {
     if (this.document.hasFocus()) {
       this.softRefreshClipboard()
     }
   }
+
+  // WIP: Touch events.
+  cancel(event) {
+    if (event.cancelable) {
+      event.preventDefault()
+      console.log('cancelled')
+    }
+  }
+  tap(event) {
+    console.log(event)
+  }
+  // ---
 
   toggleClipboard() {
     this.readAllowed.pipe(take(1)).subscribe(allowed => {
@@ -71,25 +81,19 @@ export class ClipListComponent implements AfterViewInit {
     })
   }
   refreshClipboard() {
-    const readText$ = this.clipboard.readText().pipe(share())
-    combineLatest([readText$, this.isEditing])
-      .pipe(
-        take(1),
-        filter(([_, editing]) => !editing),
-        pluck(0, 'text')
-      )
-      .subscribe(text => this.store.dispatch(new SetEditingText(text)))
-    combineLatest([readText$, this.buffer])
+    combineLatest([this.clipboard.readText(), this.buffer, this.isEditing])
       .pipe(
         take(1),
         filter(([clip, buffer]) => clip && clip.text !== buffer),
-        pluck(0)
-      )
-      .subscribe({
-        next: (clip: Clip) => {
+        tap(([clip]) => {
           this.store.dispatch(new SetClipboard(clip, true))
           this.store.dispatch(new InsertClip(clip))
-        },
+        }),
+        filter(([_0, _1, editing]) => !editing),
+        pluck(0, 'text')
+      )
+      .subscribe({
+        next: text => this.store.dispatch(new SetEditingText(text)),
         error: () => this.store.dispatch(new SetClipboard(null))
       })
   }
@@ -100,7 +104,7 @@ export class ClipListComponent implements AfterViewInit {
       this.readAllowed,
       this.isLoading,
       this.isEditing,
-      this.clipboard.getReadPermission()
+      this.clipboard.checkReadPermission()
     ])
       .pipe(
         take(1),

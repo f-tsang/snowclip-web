@@ -1,6 +1,8 @@
 import {Action, createFeatureSelector, createSelector} from '@ngrx/store'
 
-// TODO - Save the allowReadClipboard state
+/**
+ * TODO - Separate the Clipboard API and snippet page states
+ */
 export interface ClipboardState {
   readPermission: {available: boolean; granted: boolean}
   writePermission: {available: boolean; granted: boolean}
@@ -139,4 +141,8 @@ export const getIsLoading = createSelector(
 export const getAllowReadClipboard = createSelector(
   selectClipboardState,
   ({allowReadClipboard}) => allowReadClipboard
+)
+export const getFavouriteClips = createSelector(
+  getHistory,
+  history => history.filter(({favourite}) => favourite)
 )

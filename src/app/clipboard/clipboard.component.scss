@@ -2,27 +2,10 @@
 
 :host {
   display: grid;
-  grid-template-areas: 'appbar' 'content';
-  grid-template-rows: minmax(2.5rem, max-content) 1fr;
-  grid-template-columns: minmax(auto, 64rem);
-  justify-content: center;
-  height: 100%;
-  overflow: hidden;
-}
-clip-app-bar {
-  grid-area: appbar;
-}
-ft-backdrop {
-  --backdrop-text-colour: var(--foreground-text-colour);
-  grid-area: content;
-}
-main {
-  display: grid;
   grid-template-areas: 'clipboard' 'history';
   grid-template-rows: min-content 1fr;
   grid-template-columns: 1fr;
   gap: var(--gap-size);
-  height: 100%;
 }
 clip-editor {
   margin-top: 0.75rem;

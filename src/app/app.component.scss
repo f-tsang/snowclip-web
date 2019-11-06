@@ -1,3 +1,35 @@
+@import './shared/styles';
+
 :host {
-  display: contents;
+  display: grid;
+  grid-template-areas: 'appbar' 'content';
+  grid-template-rows: minmax(2.5rem, max-content) 1fr;
+  grid-template-columns: minmax(auto, 64rem);
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+}
+clip-app-bar {
+  grid-area: appbar;
+  position: relative;
+}
+ft-backdrop {
+  --backdrop-text-colour: var(--foreground-text-colour);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+}
+.backdrop {
+  grid-area: content;
+  position: relative;
+}
+.backdrop-back-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 3rem;
 }

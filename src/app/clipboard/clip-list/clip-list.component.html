@@ -19,12 +19,18 @@
     </div>
   </div>
 </header>
+<!-- TODO -->
+<!--   touchstart -> touch event detected -->
+<!--   disable hover for clips -->
+<!--   click -> reset hover detection -->
+<!-- NOTE: Prevent mousedown to not take focus -->
 <div
   class="clip-list"
   *ngIf="(clips | async)?.length > 0; else emptyListState"
   (mousedown)="$event.preventDefault()"
-  (touchend)="$event.preventDefault()"
+  (touchend)="cancel($event)"
 >
+  <!-- (tap)="tap($event)" -->
   <clip-clip *ngFor="let clip of clips | async" [clip]="clip"></clip-clip>
 </div>
 <ng-template #emptyListState>

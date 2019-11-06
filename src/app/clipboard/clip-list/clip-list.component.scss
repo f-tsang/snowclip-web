@@ -1,17 +1,12 @@
 @import '../../shared/styles';
 
 :host {
-  // WIP
-  // ---
-  margin: 0 auto;
-  max-width: 40rem; // TEMPORARY. minmax(auto, 40rem)
-  width: 100%;
-  // ---
   display: grid;
   grid-template-areas: 'header' 'history';
   grid-template-rows: 2.5rem min-content;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(auto, 40rem);
   gap: 0.5rem;
+  justify-content: center;
 
   > header {
     grid-area: header;
@@ -24,15 +19,13 @@
   border-radius: 1.25rem;
 }
 .clip-list {
-  // WIP
+  margin: 0 0 1rem;
+  padding: 0.25rem 0;
+  grid-area: history;
   display: grid;
   grid-auto-rows: minmax(48px, max-content);
   grid-auto-flow: row;
-  // ---
-  margin: 0 1rem 0.5rem;
-  grid-area: history;
   border: 1px solid var(--border-colour);
-  padding: 0.25rem 0;
   border-radius: 0.5rem;
   background: var(--content-colour);
 
@@ -46,10 +39,6 @@
   }
   > :not(:last-child) {
     border-bottom: 1px solid var(--divider-colour);
-  }
-
-  @media (min-width: 720px) {
-    margin: 0 0 0.5rem;
   }
 }
 .emptyListState {

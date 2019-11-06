@@ -1,17 +1,12 @@
 @import '../styles';
 
 :host {
-  // WIP
-  // ---
-  margin: 0 auto;
-  max-width: 40rem; // TEMPORARY. minmax(auto, 40rem)
-  width: 100%;
-  // ---
   display: grid;
   grid-template-areas: 'header' 'editor';
   grid-template-rows: 2.5rem 1fr;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(auto, 40rem);
   gap: var(--gap-size, 0.5rem);
+  justify-content: center;
   min-height: 3.5rem;
 }
 textarea {

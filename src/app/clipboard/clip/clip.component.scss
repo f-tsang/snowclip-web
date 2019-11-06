@@ -23,15 +23,16 @@
 }
 .content {
   grid-area: content;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem calc(1rem - 1px);
   overflow: hidden;
 }
 .control-block {
   padding: 0 0.5rem;
+  padding-right: calc(0.5rem - 1px);
   display: grid;
   grid-auto-flow: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--gap-size);
 }
 .view-controls {
   visibility: visible;
@@ -45,6 +46,10 @@
   grid-auto-flow: column;
   align-items: center;
   justify-content: end;
-  background: #000;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #e5e5e5 25%);
+  background: var(--background-gradient-colour);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,
+    var(--background-gradient-colour) 12.5%
+  );
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core'
 import {Observable, of, throwError} from 'rxjs'
-import {catchError, mergeMap} from 'rxjs/operators'
+import {mergeMap, tap} from 'rxjs/operators'
 
 export class NotSupportedError extends Error {
   constructor(message = 'Permissions API not supported.') {
@@ -26,40 +26,28 @@ export class PermissionsService {
     }
   }
 
-  query(
-    queryOptions: PermissionDescriptor | any,
-    continueUnsupported?: boolean
-  ) {
+  query(queryOptions: PermissionDescriptor | any) {
     return this.permissions.pipe(
-      mergeMap(permissions => permissions.query(queryOptions)),
-      continueIfUnsupported(continueUnsupported)
+      checkSupport('query'),
+      mergeMap(permissions => permissions.query(queryOptions))
     )
   }
   /**
    * NOTE: Do not use. Not supported by default (even on Chrome).
    */
-  revoke(
-    queryOptions: PermissionDescriptor | any,
-    continueUnsupported?: boolean
-  ) {
+  revoke(queryOptions: PermissionDescriptor | any) {
     return this.permissions.pipe(
-      mergeMap(permissions => {
-        if (!('revoke' in permissions)) {
-          throw new NotSupportedError()
-        }
-        // @ts-ignore
-        return permissions.revoke(queryOptions)
-      }),
-      continueIfUnsupported(continueUnsupported)
+      checkSupport('revoke'),
+      // @ts-ignore
+      mergeMap(permissions => permissions.revoke(queryOptions))
     )
   }
 }
 
-function continueIfUnsupported(continueUnsupported: boolean, state = 'prompt') {
-  return catchError(err => {
-    if (!(continueUnsupported && err instanceof NotSupportedError)) {
-      throw err
+function checkSupport(featureName: string) {
+  return tap((permissions: Permissions) => {
+    if (!(featureName in permissions)) {
+      throw new NotSupportedError()
     }
-    return of({state, onchange: null})
   })
 }

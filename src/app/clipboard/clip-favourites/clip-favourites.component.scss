@@ -1,0 +1,15 @@
+:host {
+  --button-colour: inherit;
+  --button-hover-colour: rgba(255, 255, 255, 0.6);
+  --background-gradient-colour: rgba(0, 0, 0, 0);
+  display: grid;
+  grid-auto-columns: minmax(auto, 40rem);
+  grid-auto-flow: row;
+  justify-content: center;
+  gap: var(--gap-size);
+  height: 100%;
+}
+.clip-list {
+  padding: 0.25rem 0;
+  overflow: auto;
+}

@@ -29,7 +29,7 @@ export class ClipService {
   constructor(private store: Store<ClipboardState>) {}
 
   useSnippet(text = '') {
-    combineLatest(this.isEditing, this.editingText)
+    combineLatest([this.isEditing, this.editingText])
       .pipe(
         take(1),
         filter(([isEditing, editingText]) => !isEditing && editingText !== text)
