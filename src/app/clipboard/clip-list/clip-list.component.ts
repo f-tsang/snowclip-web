@@ -2,21 +2,13 @@ import {DOCUMENT} from '@angular/common'
 import {AfterViewInit, Component, HostListener, Inject} from '@angular/core'
 import {Store} from '@ngrx/store'
 import {combineLatest} from 'rxjs'
-import {
-  distinctUntilChanged,
-  filter,
-  map,
-  pluck,
-  take,
-  tap
-} from 'rxjs/operators'
+import {filter, map, pluck, take, tap} from 'rxjs/operators'
 import {ClipboardService} from 'src/app/clipboard.service'
 
+import {ClipService} from '../clip.service'
 import {
   getAllowReadClipboard,
-  getCurrentClip,
   getHistory,
-  getIsEditingClipboard,
   getIsLoading,
   getReadPermissionAvailibility,
   getReadPermissionStatus,
@@ -32,12 +24,9 @@ import {
   styleUrls: ['./clip-list.component.scss']
 })
 export class ClipListComponent implements AfterViewInit {
+  isEditing = this.clipService.isEditing
+  buffer = this.clipService.buffer
   clips = this.store.select(getHistory)
-  isEditing = this.store.select(getIsEditingClipboard)
-  buffer = this.store.select(getCurrentClip).pipe(
-    map(clip => (clip && clip.text) || ''),
-    distinctUntilChanged()
-  )
   isLoading = this.store.select(getIsLoading)
   readAvailable = this.store.select(getReadPermissionAvailibility)
   readPermission = this.store.select(getReadPermissionStatus)
@@ -49,6 +38,7 @@ export class ClipListComponent implements AfterViewInit {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
+    private clipService: ClipService,
     private clipboard: ClipboardService,
     private store: Store<any>
   ) {}

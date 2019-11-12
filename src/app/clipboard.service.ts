@@ -12,7 +12,6 @@ import {
   switchMap,
   take,
   tap,
-  toArray,
   withLatestFrom
 } from 'rxjs/operators'
 
@@ -21,16 +20,11 @@ import {
   ClipboardState,
   getReadPermissionStatus,
   getWritePermissionStatus,
-  LoadHistory,
-  SetClipboard,
-  SetEditingText,
   SetReadAvailibility,
   SetReadPermission,
   SetWriteAvailibility,
   SetWritePermission
 } from './clipboard/clipboard'
-import {fromIdbCursor, TABLE_NAMES} from './database'
-import {DatabaseService} from './database.service'
 import {PermissionsService} from './permissions.service'
 
 /**
@@ -53,7 +47,6 @@ export class ClipboardService {
 
   constructor(
     private permissions: PermissionsService,
-    private db: DatabaseService,
     private window: Window,
     private store: Store<ClipboardState>
   ) {
@@ -63,25 +56,6 @@ export class ClipboardService {
     } else {
       this.clipboard = throwError(new Error('Clipboard API not supported.'))
     }
-    // TODO - Move the loading of past states elsewhere
-    this.db.transaction
-      .pipe(
-        mergeMap(tx => {
-          const historyStore = tx.objectStore(TABLE_NAMES.history)
-          const cursorRequest = historyStore.openCursor(null, 'prev')
-          return fromIdbCursor<Partial<Clip>>(cursorRequest)
-        }),
-        // take(10), // TODO - Load more clips on scroll
-        map(serializedClip => new Clip(serializedClip)),
-        toArray()
-      )
-      .subscribe(clips => {
-        this.store.dispatch(
-          new SetEditingText((clips[0] && clips[0].text) || '')
-        )
-        this.store.dispatch(new SetClipboard(new Clip(clips[0]), true))
-        this.store.dispatch(new LoadHistory(clips))
-      })
   }
 
   checkReadPermission() {

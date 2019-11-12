@@ -4,6 +4,7 @@ import {of} from 'rxjs'
 import {
   catchError,
   concatMap,
+  distinctUntilChanged,
   filter,
   map,
   mergeMap,
@@ -20,6 +21,7 @@ import {
   DeleteClip,
   InsertClip,
   NotImplemented,
+  SetAllowClipboardRead,
   SetClipboard,
   SetWritePermission,
   UpdateClip
@@ -50,6 +52,13 @@ export class ClipboardEffects {
   deleteSnippet$ = this.actions.pipe(
     ofType<DeleteClip>(ActionTypes.DeleteClip),
     concatMap(({id}) => this.deleteSnippet(id))
+  )
+  @Effect({dispatch: false})
+  recordReadToggle$ = this.actions.pipe(
+    ofType<SetAllowClipboardRead>(ActionTypes.SetAllowClipboardRead),
+    pluck('allowed'),
+    distinctUntilChanged(),
+    concatMap(allowed => this.recordReadToggle(allowed))
   )
 
   constructor(
@@ -97,6 +106,17 @@ export class ClipboardEffects {
         return fromIdbRequest(deleteRequest)
       }),
       catchError(({message}) => of(new NotImplemented(message)))
+    )
+  }
+
+  recordReadToggle(allowed: boolean) {
+    return this.db.transaction.pipe(
+      concatMap(tx => {
+        const appStore = tx.objectStore(TABLE_NAMES.appdata)
+        const data = {key: 'allowClipboardRead', value: allowed}
+        const putRequest = appStore.put(data)
+        return fromIdbRequest(putRequest)
+      })
     )
   }
 }

@@ -1,8 +1,19 @@
 import {Injectable} from '@angular/core'
 import {Store} from '@ngrx/store'
-import {combineLatest} from 'rxjs'
-import {distinctUntilChanged, filter, map, take} from 'rxjs/operators'
+import {combineLatest, merge, pipe} from 'rxjs'
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  publish,
+  take,
+  tap,
+  toArray
+} from 'rxjs/operators'
 
+import {fromIdbCursor, TABLE_NAMES} from '../database'
+import {DatabaseService} from '../database.service'
 import {
   Clip,
   ClipboardState,
@@ -10,6 +21,8 @@ import {
   getCurrentClip,
   getEditingText,
   getIsEditingClipboard,
+  LoadHistory,
+  SetAllowClipboardRead,
   SetClipboard,
   SetEditingText,
   UpdateClip
@@ -26,7 +39,45 @@ export class ClipService {
     distinctUntilChanged()
   )
 
-  constructor(private store: Store<ClipboardState>) {}
+  private loadReadToggle = pipe(
+    mergeMap((tx: IDBTransaction) => {
+      const appStore = tx.objectStore(TABLE_NAMES.appdata)
+      const getRequest = appStore.get('allowClipboardRead')
+      return fromIdbCursor(getRequest)
+    }),
+    tap(({value}) => this.store.dispatch(new SetAllowClipboardRead(value)))
+  )
+  private loadHistory = pipe(
+    mergeMap((tx: IDBTransaction) => {
+      const historyStore = tx.objectStore(TABLE_NAMES.history)
+      const cursorRequest = historyStore.openCursor(null, 'prev')
+      return fromIdbCursor<Partial<Clip>>(cursorRequest)
+    }),
+    // take(10), // TODO - Load more clips on scroll
+    map(serializedClip => new Clip(serializedClip)),
+    toArray(),
+    tap(clips => {
+      this.store.dispatch(new SetEditingText((clips[0] && clips[0].text) || ''))
+      this.store.dispatch(new SetClipboard(new Clip(clips[0]), true))
+      this.store.dispatch(new LoadHistory(clips))
+    })
+  )
+
+  constructor(
+    private db: DatabaseService,
+    private store: Store<ClipboardState>
+  ) {
+    this.db.transaction
+      .pipe(
+        publish(multicastedTx$ =>
+          merge(
+            multicastedTx$.pipe(this.loadReadToggle),
+            multicastedTx$.pipe(this.loadHistory)
+          )
+        )
+      )
+      .subscribe()
+  }
 
   useSnippet(text = '') {
     combineLatest([this.isEditing, this.editingText])
