@@ -42,6 +42,7 @@ export class ClipboardComponent implements AfterViewInit {
 
   constructor(private app: AppService, private appbar: AppBar) {}
   ngAfterViewInit() {
+    this.appbar.clearControls()
     this.appbar.addControl(this.favouritesButton)
   }
 

@@ -1,11 +1,14 @@
 import {
   AfterViewInit,
   Component,
+  OnDestroy,
   ViewChild,
   ViewContainerRef
 } from '@angular/core'
+import {filter} from 'rxjs/operators'
 
 import {AppBar} from './app-bar.service'
+import {AppMenuComponent} from './app-menu/app-menu.component'
 import {AppService} from './app.service'
 
 /**
@@ -29,14 +32,27 @@ import {AppService} from './app.service'
   `,
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnDestroy, AfterViewInit {
   @ViewChild('viewContainer', {read: ViewContainerRef, static: false})
   viewContainerRef: ViewContainerRef
-  title = 'Snowclip'
+  title = 'Snowclip' // TBD: Move to a constants file.
+
+  private menuToggleSub = this.appbar.menuToggle$
+    .pipe(filter(target => target == null))
+    .subscribe(() => this.showMenu())
 
   constructor(private app: AppService, private appbar: AppBar) {}
   ngAfterViewInit() {
     this.appbar.setTitle(this.title)
     this.app.bindView(this.viewContainerRef)
+  }
+  ngOnDestroy() {
+    this.menuToggleSub.unsubscribe()
+  }
+
+  showMenu() {
+    this.app.replaceBackdrop(AppMenuComponent).subscribe(componentRef => {
+      componentRef.instance.destroy = () => componentRef.destroy()
+    })
   }
 }

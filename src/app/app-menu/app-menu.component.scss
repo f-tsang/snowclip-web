@@ -1,0 +1,34 @@
+:host {
+  padding: 0.5rem 0;
+  display: flex;
+  flex-flow: column nowrap;
+}
+.menu-link {
+  display: grid;
+  grid-template-areas: 'icon text';
+  grid-template-rows: minmax(3rem, max-content);
+  grid-template-columns: 3.5rem 1fr;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  > :nth-child(1) {
+    padding: 0.5rem;
+    text-align: center;
+  }
+  > :nth-child(2) {
+    padding: 0 1rem;
+  }
+}
+.divider {
+  margin-left: 4.5rem;
+  height: 1px;
+  background: gray;
+}
+.menu-link ~ .divider,
+.divider + .menu-link {
+  margin-top: 0.5rem;
+}

@@ -8,6 +8,7 @@ import {StoreDevtoolsModule} from '@ngrx/store-devtools'
 import {BackdropModule} from 'ft-backdrop'
 
 import {environment} from '../environments/environment'
+import {AppMenuComponent} from './app-menu/app-menu.component'
 import {AppRoutingModule} from './app-routing.module'
 import {AppComponent} from './app.component'
 import {SharedModule} from './shared/shared.module'
@@ -24,7 +25,7 @@ const devtoolOptions = {
 }
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, AppMenuComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
