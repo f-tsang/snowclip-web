@@ -19,7 +19,7 @@
   border-radius: 1.25rem;
 }
 .clip-list {
-  margin: 0 0 1rem;
+  margin: 0 1rem 1rem;
   padding: 0.25rem 0;
   grid-area: history;
   display: grid;
@@ -39,6 +39,10 @@
   }
   > :not(:last-child) {
     border-bottom: 1px solid var(--divider-colour);
+  }
+
+  @media (min-width: 720px) {
+    margin: 0 0 1rem;
   }
 }
 .emptyListState {
