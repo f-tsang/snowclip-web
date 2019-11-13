@@ -86,7 +86,7 @@ export class UpdateClip implements Action {
 }
 export class DeleteClip implements Action {
   readonly type = ActionTypes.DeleteClip
-  constructor(public id: number) {}
+  constructor(public id: number, public clip?: Clip) {}
 }
 export class SetAllowClipboardRead implements Action {
   readonly type = ActionTypes.SetAllowClipboardRead
@@ -142,7 +142,6 @@ export const getAllowReadClipboard = createSelector(
   selectClipboardState,
   ({allowReadClipboard}) => allowReadClipboard
 )
-export const getFavouriteClips = createSelector(
-  getHistory,
-  history => history.filter(({favourite}) => favourite)
+export const getFavouriteClips = createSelector(getHistory, history =>
+  history.filter(({favourite}) => favourite)
 )

@@ -12,7 +12,7 @@ import {
   toArray
 } from 'rxjs/operators'
 
-import {fromIdbCursor, TABLE_NAMES} from '../database'
+import {fromIdbCursor, fromIdbRequest, TABLE_NAMES} from '../database'
 import {DatabaseService} from '../database.service'
 import {
   Clip,
@@ -43,8 +43,9 @@ export class ClipService {
     mergeMap((tx: IDBTransaction) => {
       const appStore = tx.objectStore(TABLE_NAMES.appdata)
       const getRequest = appStore.get('allowClipboardRead')
-      return fromIdbCursor(getRequest)
+      return fromIdbRequest(getRequest)
     }),
+    filter(Boolean),
     tap(({value}) => this.store.dispatch(new SetAllowClipboardRead(value)))
   )
   private loadHistory = pipe(
@@ -94,7 +95,7 @@ export class ClipService {
       .subscribe(() => this.store.dispatch(new SetClipboard(new Clip({text}))))
   }
   deleteSnippet(clip: Clip) {
-    this.store.dispatch(new DeleteClip(clip.id))
+    this.store.dispatch(new DeleteClip(clip.id, clip))
   }
   toggleFavouriteSnippet(clip: Clip) {
     this.store.dispatch(

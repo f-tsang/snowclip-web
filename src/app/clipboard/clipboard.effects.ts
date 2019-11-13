@@ -1,15 +1,17 @@
 import {Injectable} from '@angular/core'
 import {Actions, Effect, ofType} from '@ngrx/effects'
-import {of} from 'rxjs'
+import {of, pipe} from 'rxjs'
 import {
   catchError,
   concatMap,
   distinctUntilChanged,
   filter,
   map,
+  mapTo,
   mergeMap,
   pluck,
-  switchMap
+  switchMap,
+  tap
 } from 'rxjs/operators'
 
 import {ClipboardService} from '../clipboard.service'
@@ -27,6 +29,7 @@ import {
   UpdateClip
 } from './clipboard'
 
+// TBD: Return toast actions.
 @Injectable()
 export class ClipboardEffects {
   @Effect({dispatch: false})
@@ -51,7 +54,9 @@ export class ClipboardEffects {
   @Effect({dispatch: false})
   deleteSnippet$ = this.actions.pipe(
     ofType<DeleteClip>(ActionTypes.DeleteClip),
-    concatMap(({id}) => this.deleteSnippet(id))
+    concatMap(({id, clip}) =>
+      this.deleteSnippet(id).pipe(this.moveToTrash(clip))
+    )
   )
   @Effect({dispatch: false})
   recordReadToggle$ = this.actions.pipe(
@@ -103,12 +108,27 @@ export class ClipboardEffects {
       mergeMap(tx => {
         const historyStore = tx.objectStore(TABLE_NAMES.history)
         const deleteRequest = historyStore.delete(id)
-        return fromIdbRequest(deleteRequest)
+        return fromIdbRequest(deleteRequest).pipe(mapTo(tx))
       }),
       catchError(({message}) => of(new NotImplemented(message)))
     )
   }
-
+  moveToTrash(clip?: Clip) {
+    return pipe(
+      tap(res => {
+        if (res instanceof Error) {
+          throw res
+        }
+      }),
+      filter(() => !!clip),
+      concatMap((tx: IDBTransaction) => {
+        const binStore = tx.objectStore(TABLE_NAMES.bin)
+        const addRequest = binStore.add(clip)
+        return fromIdbRequest(addRequest)
+      }),
+      catchError(({message}) => of(new NotImplemented(message)))
+    )
+  }
   recordReadToggle(allowed: boolean) {
     return this.db.transaction.pipe(
       concatMap(tx => {

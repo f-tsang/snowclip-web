@@ -23,15 +23,17 @@ export enum DatabaseInfo {
 
 export const TABLE_NAMES = {
   appdata: 'appdata',
+  bin: 'bin',
   history: 'history' // NOTE: Index populates on add, so fav's can't be indexed.
 }
 export const TABLE_PRIMAY_KEYS = {
   [TABLE_NAMES.appdata]: {keyPath: 'key'},
+  [TABLE_NAMES.bin]: {autoIncrement: true},
   [TABLE_NAMES.history]: {keyPath: 'id', autoIncrement: true}
 }
 export const TABLE_INDEXES = {
   [TABLE_NAMES.appdata]: [['key', 'key', {unique: true}]],
-  [TABLE_NAMES.history]: [['text', 'text'], ['type', 'type']]
+  [TABLE_NAMES.history]: [['id', 'id', {unique: true}]]
 }
 
 export class ExistingConnectionError extends Error {
