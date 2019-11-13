@@ -13,3 +13,14 @@
   padding: 0.25rem 0;
   overflow: auto;
 }
+// TBD: A shared style for empty states? See bin.component.scss.
+.emptyState {
+  padding: 1rem;
+  display: flex;
+  flex-flow: column nowrap;
+  text-align: center;
+
+  > .icon {
+    font-size: 400%;
+  }
+}

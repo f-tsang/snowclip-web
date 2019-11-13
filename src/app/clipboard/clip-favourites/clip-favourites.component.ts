@@ -19,12 +19,17 @@ import {getFavouriteClips} from '../clipboard'
       class="clip-list"
       *ngIf="(clips | async)?.length > 0; else emptyFavState"
       (mousedown)="$event.preventDefault()"
-      (touchend)="$event.preventDefault()"
+      (touchend)="$event.cancelable && $event.preventDefault()"
       (click)="close()"
     >
       <clip-clip *ngFor="let clip of clips | async" [clip]="clip"></clip-clip>
     </div>
-    <ng-template #emptyFavState></ng-template>
+    <ng-template #emptyFavState>
+    <div class="emptyState">
+    <i class="icon material-icons">favorite_border</i>
+    <span>Your favourite snippets will show up here.</span>
+  </div>
+    </ng-template>
   `,
   styleUrls: ['./clip-favourites.component.scss']
 })
@@ -37,7 +42,7 @@ export class ClipFavouritesComponent implements OnInit, AfterViewInit {
     this.store.dispatch(new HideBackdrop())
   }
   ngAfterViewInit() {
-    setTimeout(() => this.revertChangesOnClose())
+    this.revertChangesOnClose()
   }
 
   close() {
