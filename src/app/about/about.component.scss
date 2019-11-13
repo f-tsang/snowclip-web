@@ -1,0 +1,26 @@
+@import '../shared/styles';
+
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+svg {
+  width: 32vmin;
+  height: 32vmin;
+}
+.alternate-text {
+  font-size: 90%;
+  color: var(--foreground-alternate-colour);
+}
+.changelog {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-areas: 'header' 'records';
+  grid-template-rows: 2.5rem min-content;
+  grid-template-columns: minmax(auto, 40rem);
+  gap: 0.5rem;
+}
+.records {
+  padding: 0 1rem;
+}
