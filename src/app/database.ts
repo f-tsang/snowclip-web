@@ -28,11 +28,12 @@ export const TABLE_NAMES = {
 }
 export const TABLE_PRIMAY_KEYS = {
   [TABLE_NAMES.appdata]: {keyPath: 'key'},
-  [TABLE_NAMES.bin]: {autoIncrement: true},
+  [TABLE_NAMES.bin]: {keyPath: 'id'},
   [TABLE_NAMES.history]: {keyPath: 'id', autoIncrement: true}
 }
 export const TABLE_INDEXES = {
   [TABLE_NAMES.appdata]: [['key', 'key', {unique: true}]],
+  [TABLE_NAMES.bin]: [['id', 'id', {unique: true}]],
   [TABLE_NAMES.history]: [['id', 'id', {unique: true}]]
 }
 

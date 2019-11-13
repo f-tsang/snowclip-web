@@ -23,6 +23,7 @@ import {
   DeleteClip,
   InsertClip,
   NotImplemented,
+  RestoreClip,
   SetAllowClipboardRead,
   SetClipboard,
   SetWritePermission,
@@ -57,6 +58,12 @@ export class ClipboardEffects {
     concatMap(({id, clip}) =>
       this.deleteSnippet(id).pipe(this.moveToTrash(clip))
     )
+  )
+  @Effect()
+  restoreClip$ = this.actions.pipe(
+    ofType<RestoreClip>(ActionTypes.RestoreClip),
+    pluck('clip'),
+    concatMap(clip => this.restoreClip(clip))
   )
   @Effect({dispatch: false})
   recordReadToggle$ = this.actions.pipe(
@@ -126,6 +133,17 @@ export class ClipboardEffects {
         const addRequest = binStore.add(clip)
         return fromIdbRequest(addRequest)
       }),
+      catchError(({message}) => of(new NotImplemented(message)))
+    )
+  }
+  restoreClip(clip: Clip) {
+    return this.db.transaction.pipe(
+      mergeMap(tx => {
+        const binStore = tx.objectStore(TABLE_NAMES.bin)
+        const deleteRequest = binStore.delete(clip.id)
+        return fromIdbRequest(deleteRequest)
+      }),
+      mapTo(new InsertClip(clip)),
       catchError(({message}) => of(new NotImplemented(message)))
     )
   }

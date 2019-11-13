@@ -1,8 +1,18 @@
-<div class="content">
-  <div class="clip" *ngFor="let clip of bin | async">
+<div class="content" *ngIf="bin.length > 0; else emptyBinState">
+  <div class="clip" *ngFor="let clip of bin; index as i">
     <span>{{ clip?.text }}</span>
-    <button class="icon-button" title="Restore snippet" (click)="noop()">
+    <button
+      class="icon-button"
+      title="Restore snippet"
+      (click)="restore(clip, i)"
+    >
       <i class="material-icons">restore_from_trash</i>
     </button>
   </div>
 </div>
+<ng-template #emptyBinState>
+  <div class="emptyState">
+    <i class="icon material-icons">delete_outline</i>
+    <span>No snippets in Recycle Bin.</span>
+  </div>
+</ng-template>

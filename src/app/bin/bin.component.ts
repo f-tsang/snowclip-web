@@ -1,28 +1,23 @@
 import {Component, OnDestroy, OnInit} from '@angular/core'
 import {Store} from '@ngrx/store'
 import {getPosition, SetBackdropTitle} from 'ft-backdrop'
-import {Observable} from 'rxjs'
 import {filter, switchMap, toArray} from 'rxjs/operators'
 
 import {AppBar} from '../app-bar.service'
-import {Clip} from '../clipboard/clipboard'
+import {Clip, RestoreClip} from '../clipboard/clipboard'
 import {fromIdbCursor, TABLE_NAMES} from '../database'
 import {DatabaseService} from '../database.service'
 
+/**
+ * TODO - Manage state in NgRx Store
+ */
 @Component({
   selector: 'clip-bin',
   templateUrl: './bin.component.html',
   styleUrls: ['./bin.component.scss']
 })
 export class BinComponent implements OnInit, OnDestroy {
-  bin: Observable<Clip[]> = this.db.transaction.pipe(
-    switchMap(tx => {
-      const binStore = tx.objectStore(TABLE_NAMES.bin)
-      const cursorRequest = binStore.openCursor(null, 'prev')
-      return fromIdbCursor<Clip>(cursorRequest)
-    }),
-    toArray()
-  )
+  bin: Clip[] = []
 
   private backdropPositionSub = this.store
     .select(getPosition)
@@ -36,13 +31,24 @@ export class BinComponent implements OnInit, OnDestroy {
   ) {}
   ngOnInit() {
     this.store.dispatch(new SetBackdropTitle('Recycle Bin'))
+    this.db.transaction
+      .pipe(
+        switchMap(tx => {
+          const binStore = tx.objectStore(TABLE_NAMES.bin)
+          const cursorRequest = binStore.openCursor(null, 'prev')
+          return fromIdbCursor<Clip>(cursorRequest)
+        }),
+        toArray()
+      )
+      .subscribe(bin => (this.bin = bin))
   }
   ngOnDestroy() {
     this.backdropPositionSub.unsubscribe()
     this.store.dispatch(new SetBackdropTitle(null))
   }
 
-  noop() {
-    console.log('Not implemented.')
+  restore(clip: Clip, index: number) {
+    this.bin.splice(index, 1)
+    this.store.dispatch(new RestoreClip(new Clip(clip)))
   }
 }
