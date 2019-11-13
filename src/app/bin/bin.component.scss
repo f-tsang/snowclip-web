@@ -1,0 +1,33 @@
+@import '../shared/styles';
+
+:host {
+  margin: 0 1rem;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-rows: max-content;
+  grid-auto-columns: minmax(auto, 40rem);
+  justify-content: center;
+
+  @media (min-width: 720px) {
+    margin: 0;
+  }
+}
+.content {
+  padding: 0.5rem 0;
+  border: 1px solid var(--border-colour);
+  border-radius: 0.5rem;
+  background: var(--content-colour);
+}
+.clip {
+  padding: 0 1rem;
+  display: grid;
+  grid-template-areas: 'text controls';
+  grid-template-rows: minmax(3rem, max-content);
+  grid-template-columns: 1fr max-content;
+  gap: 0.5rem;
+  align-items: center;
+
+  &:hover {
+    background: var(--background-hover-colour);
+  }
+}

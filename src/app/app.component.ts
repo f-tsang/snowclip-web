@@ -15,6 +15,8 @@ import {AppService} from './app.service'
  * TODO
  *  - Move app-bar component out of SharedModule
  *  - Denote hot Observables with a '$' suffix
+ *  - Global app styles imported using styleUrls instead of SCSS
+ *  - Shared clip styles (i.e. _clip.scss)
  */
 @Component({
   selector: 'clip-root',

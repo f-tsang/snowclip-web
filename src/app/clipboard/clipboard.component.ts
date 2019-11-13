@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  OnDestroy,
   TemplateRef,
   ViewChild,
   ViewContainerRef
@@ -34,7 +35,7 @@ import {
   `,
   styleUrls: ['./clipboard.component.scss']
 })
-export class ClipboardComponent implements AfterViewInit {
+export class ClipboardComponent implements OnDestroy, AfterViewInit {
   @ViewChild('viewContainer', {read: ViewContainerRef, static: false})
   viewContainerRef: ViewContainerRef
   @ViewChild('favouritesButton', {read: TemplateRef, static: false})
@@ -42,8 +43,10 @@ export class ClipboardComponent implements AfterViewInit {
 
   constructor(private app: AppService, private appbar: AppBar) {}
   ngAfterViewInit() {
-    this.appbar.clearControls()
     this.appbar.addControl(this.favouritesButton)
+  }
+  ngOnDestroy() {
+    this.appbar.clearControls()
   }
 
   showFavourites() {

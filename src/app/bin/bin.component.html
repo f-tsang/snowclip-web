@@ -1,1 +1,8 @@
-<p>bin works!</p>
+<div class="content">
+  <div class="clip" *ngFor="let clip of bin | async">
+    <span>{{ clip?.text }}</span>
+    <button class="icon-button" title="Restore snippet" (click)="noop()">
+      <i class="material-icons">restore_from_trash</i>
+    </button>
+  </div>
+</div>

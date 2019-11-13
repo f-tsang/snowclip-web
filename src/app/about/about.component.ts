@@ -6,7 +6,9 @@ import {filter} from 'rxjs/operators'
 import {AppBar} from '../app-bar.service'
 
 /**
- * TODO - Read values from a constants file
+ * TODO
+ *  - Read values from a constants file
+ *  - Get version details using the service worker
  */
 @Component({
   selector: 'clip-about',
