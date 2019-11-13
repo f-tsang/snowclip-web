@@ -60,7 +60,7 @@ const initialState: ClipboardState = {
   editingText: '',
   history: [],
   isLoading: true,
-  allowReadClipboard: true
+  allowReadClipboard: false
 }
 export function reducer(state = initialState, action: Action): ClipboardState {
   switch (action.type) {

@@ -140,7 +140,7 @@ export class ClipboardService {
     return this.readPermission.pipe(
       take(1),
       tap(readable => {
-        const permission = state === 'granted'
+        const permission = state.match(/(prompt)|(granted)/g) != null
         if (permission !== readable) {
           this.store.dispatch(new SetReadPermission(permission))
         }
@@ -152,7 +152,7 @@ export class ClipboardService {
     return this.writePermission.pipe(
       take(1),
       tap(writable => {
-        const permission = state === 'granted'
+        const permission = state.match(/(prompt)|(granted)/g) != null
         if (permission !== writable) {
           this.store.dispatch(new SetWritePermission(permission))
         }
