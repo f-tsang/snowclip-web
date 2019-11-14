@@ -1,10 +1,18 @@
-import {Component, OnDestroy, OnInit} from '@angular/core'
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core'
 import {Store} from '@ngrx/store'
 import {getPosition, SetBackdropTitle} from 'ft-backdrop'
 import {filter, switchMap, toArray} from 'rxjs/operators'
 
 import {AppBar} from '../app-bar.service'
-import {Clip, RestoreClip} from '../clipboard/clipboard'
+import {Clip, PurgeBin, RestoreClip} from '../clipboard/clipboard'
 import {fromIdbCursor, TABLE_NAMES} from '../database'
 import {DatabaseService} from '../database.service'
 
@@ -16,7 +24,9 @@ import {DatabaseService} from '../database.service'
   templateUrl: './bin.component.html',
   styleUrls: ['./bin.component.scss']
 })
-export class BinComponent implements OnInit, OnDestroy {
+export class BinComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('purgeButton', {read: TemplateRef, static: false})
+  purgeButton: TemplateRef<ElementRef>
   bin: Clip[] = []
 
   private backdropPositionSub = this.store
@@ -42,13 +52,21 @@ export class BinComponent implements OnInit, OnDestroy {
       )
       .subscribe(bin => (this.bin = bin))
   }
+  ngAfterViewInit() {
+    this.appbar.addControl(this.purgeButton)
+  }
   ngOnDestroy() {
     this.backdropPositionSub.unsubscribe()
+    this.appbar.clearControls()
     this.store.dispatch(new SetBackdropTitle(null))
   }
 
   restore(clip: Clip, index: number) {
     this.bin.splice(index, 1)
     this.store.dispatch(new RestoreClip(new Clip(clip)))
+  }
+  purgeAll() {
+    this.bin = []
+    this.store.dispatch(new PurgeBin())
   }
 }

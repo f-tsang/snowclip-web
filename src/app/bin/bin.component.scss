@@ -42,3 +42,14 @@
     font-size: 400%;
   }
 }
+.button {
+  > span:first-of-type {
+    padding-left: 0.25rem;
+  }
+}
+.colour-alert {
+  color: var(--alert-colour);
+  &:hover {
+    background: var(--alert-colour);
+  }
+}

@@ -37,6 +37,7 @@ export const enum ActionTypes {
   InsertClip = '[Clipboard] INSERT_CLIP',
   UpdateClip = '[Clipboard] UPDATE_CLIP',
   DeleteClip = '[Clipboard] DELETE_CLIP',
+  PurgeBin = '[Clipboard] PURGE_BIN',
   RestoreClip = '[Clipboard] RESTORE_CLIP',
   SetAllowClipboardRead = '[Clipboard] SET_ALLOW_CLIPBOARD_READ',
   NotImplemented = '[Clipboard] NOT_IMPLEMENTED'
@@ -88,6 +89,9 @@ export class UpdateClip implements Action {
 export class DeleteClip implements Action {
   readonly type = ActionTypes.DeleteClip
   constructor(public id: number, public clip?: Clip) {}
+}
+export class PurgeBin implements Action {
+  readonly type = ActionTypes.PurgeBin
 }
 export class RestoreClip implements Action {
   readonly type = ActionTypes.RestoreClip

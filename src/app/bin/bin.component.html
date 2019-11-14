@@ -16,3 +16,9 @@
     <span>No snippets in Recycle Bin.</span>
   </div>
 </ng-template>
+<ng-template #purgeButton>
+  <button class="button colour-alert" (click)="purgeAll()">
+    <i class="material-icons">delete_sweep</i>
+    <span>Empty Recycle Bin</span>
+  </button>
+</ng-template>
