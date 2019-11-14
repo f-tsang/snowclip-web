@@ -1,6 +1,7 @@
+import {Clipboard as CdkClipboard} from '@angular/cdk/clipboard'
 import {Injectable} from '@angular/core'
 import {Store} from '@ngrx/store'
-import {merge, Observable, of, pipe, throwError} from 'rxjs'
+import {EMPTY, merge, Observable, of, pipe, throwError} from 'rxjs'
 import {
   catchError,
   filter,
@@ -31,9 +32,6 @@ import {PermissionsService} from './permissions.service'
  * TODO
  *  - Move into CoreModule
  *  - UWA version must provide a native version for this service.
- *  - writeText(): Fallback to cdkCopyToClipboard, if not Clipboard API
- * TBD: Consider for Edge (fallback does this?):
- *   textarea + HTMLInputElement.select() + Document.execCommand('copy')
  * TBD: Set onchange permission query to dispatch set clipboard permission.
  */
 @Injectable({
@@ -48,6 +46,7 @@ export class ClipboardService {
   constructor(
     private permissions: PermissionsService,
     private window: Window,
+    private cdkClipboard: CdkClipboard,
     private store: Store<ClipboardState>
   ) {
     if ('navigator' in this.window && 'clipboard' in this.window.navigator) {
@@ -109,7 +108,15 @@ export class ClipboardService {
       return throwError(new Error('Clipboard write failed: Type error.'))
     }
     return this.getClipboardWithPermission(this.writePermission).pipe(
-      mergeMap(clipboard => clipboard.writeText(text))
+      tap(clipboard => {
+        if (!('writeText' in clipboard)) {
+          // Fallback method:
+          // textarea + HTMLInputElement.select() + Document.execCommand('copy')
+          throw new Error(`Falling back to document.execCommand('copy')`)
+        }
+      }),
+      mergeMap(clipboard => clipboard.writeText(text)),
+      catchError(() => (this.cdkClipboard.copy(text), EMPTY))
     )
   }
 

@@ -1,3 +1,4 @@
+import {ClipboardModule} from '@angular/cdk/clipboard'
 import {Injectable, NgModule} from '@angular/core'
 import {
   BrowserModule,
@@ -50,6 +51,7 @@ export class HammerConfig extends HammerGestureConfig {
     BrowserModule,
     BrowserAnimationsModule,
     HammerModule,
+    ClipboardModule,
     StoreModule.forRoot({}, storeOptions),
     EffectsModule.forRoot([]),
     StoreDevtoolsModule.instrument(devtoolOptions),
