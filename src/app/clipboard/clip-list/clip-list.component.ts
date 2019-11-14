@@ -48,18 +48,6 @@ export class ClipListComponent implements AfterViewInit {
     }
   }
 
-  // WIP: Touch events.
-  cancel(event) {
-    if (event.cancelable) {
-      event.preventDefault()
-      console.log('cancelled')
-    }
-  }
-  tap(event) {
-    console.log(event)
-  }
-  // ---
-
   toggleClipboard() {
     this.readAllowed.pipe(take(1)).subscribe(allowed => {
       if (allowed) {

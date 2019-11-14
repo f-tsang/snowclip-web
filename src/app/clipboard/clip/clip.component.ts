@@ -4,9 +4,7 @@ import {ClipService} from '../clip.service'
 import {Clip} from '../clipboard'
 
 /**
- * TODO - Controls for clips
- *  - swipe left to favourite
- *  - swipe right to delete
+ * TODO - Hints and animations for swipe controls
  */
 @Component({
   selector: 'clip-clip',

@@ -1,11 +1,17 @@
-import {NgModule} from '@angular/core'
-import {BrowserModule, HammerModule} from '@angular/platform-browser'
+import {Injectable, NgModule} from '@angular/core'
+import {
+  BrowserModule,
+  HAMMER_GESTURE_CONFIG,
+  HammerGestureConfig,
+  HammerModule
+} from '@angular/platform-browser'
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations'
 import {ServiceWorkerModule} from '@angular/service-worker'
 import {EffectsModule} from '@ngrx/effects'
 import {StoreModule} from '@ngrx/store'
 import {StoreDevtoolsModule} from '@ngrx/store-devtools'
 import {BackdropModule} from 'ft-backdrop'
+import {DIRECTION_HORIZONTAL} from 'hammerjs'
 
 import {environment} from '../environments/environment'
 import {AppMenuComponent} from './app-menu/app-menu.component'
@@ -24,6 +30,20 @@ const devtoolOptions = {
   logOnly: environment.production
 }
 
+@Injectable()
+export class HammerConfig extends HammerGestureConfig {
+  overrides = {
+    // domEvents: true,
+    swipe: {direction: DIRECTION_HORIZONTAL}
+  }
+  /**
+   * @see [GitHub](https://github.com/hammerjs/hammer.js/issues/1014#issuecomment-372513548) for applying 'pan-y' only to specific elements.
+   */
+  buildHammer(element: HTMLElement) {
+    return new Hammer(element, {touchAction: 'pan-y'})
+  }
+}
+
 @NgModule({
   declarations: [AppComponent, AppMenuComponent],
   imports: [
@@ -40,7 +60,12 @@ const devtoolOptions = {
     }),
     BackdropModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HAMMER_GESTURE_CONFIG,
+      useClass: HammerConfig
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -1,4 +1,10 @@
-<span class="content" (click)="use(clip?.text)">{{ clip?.text }}</span>
+<span
+  class="content"
+  (tap)="use(clip?.text)"
+  (swipeleft)="favourite()"
+  (swiperight)="delete()"
+  >{{ clip?.text }}</span
+>
 <div class="controls">
   <div class="control-block view-controls" *ngIf="clip?.favourite">
     <div class="icon-button colour-primary">
@@ -6,13 +12,13 @@
     </div>
   </div>
   <div class="control-block hover-controls">
-    <button class="icon-button" (click)="delete()">
+    <button class="icon-button" (tap)="delete()">
       <i class="material-icons">delete</i>
     </button>
     <button
       class="icon-button"
       [ngClass]="{'colour-primary': clip?.favourite}"
-      (click)="favourite()"
+      (tap)="favourite()"
     >
       <i class="material-icons">{{
         clip?.favourite ? 'favorite' : 'favorite_border'

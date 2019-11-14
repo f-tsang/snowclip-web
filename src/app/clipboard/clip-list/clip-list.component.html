@@ -27,10 +27,8 @@
 <div
   class="clip-list"
   *ngIf="(clips | async)?.length > 0; else emptyListState"
-  (mousedown)="$event.preventDefault()"
-  (touchend)="cancel($event)"
+  (mousedown)="!$event.defaultPrevented && $event.preventDefault()"
 >
-  <!-- (tap)="tap($event)" -->
   <clip-clip *ngFor="let clip of clips | async" [clip]="clip"></clip-clip>
 </div>
 <ng-template #emptyListState>
