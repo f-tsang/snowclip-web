@@ -1,13 +1,29 @@
 import {
   AfterViewInit,
   Component,
+  ElementRef,
   HostListener,
-  OnDestroy,
-  OnInit
+  OnInit,
+  ViewContainerRef
 } from '@angular/core'
 import {Store} from '@ngrx/store'
-import {getPosition, HideBackdrop, ShowBackdrop} from 'ft-backdrop'
-import {filter, take} from 'rxjs/operators'
+import {
+  getIsAnimating,
+  getPosition,
+  HideBackdrop,
+  ShowBackdrop
+} from 'ft-backdrop'
+import {combineLatest, from, of, range} from 'rxjs'
+import {
+  filter,
+  map,
+  mapTo,
+  mergeMap,
+  pluck,
+  take,
+  toArray,
+  withLatestFrom
+} from 'rxjs/operators'
 
 import {AppBar} from '../app-bar.service'
 
@@ -16,7 +32,7 @@ import {AppBar} from '../app-bar.service'
   templateUrl: './app-menu.component.html',
   styleUrls: ['./app-menu.component.scss']
 })
-export class AppMenuComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppMenuComponent implements OnInit, AfterViewInit {
   destroy: () => void
 
   private menuTargetName = 'AppMenuComponent'
@@ -24,24 +40,19 @@ export class AppMenuComponent implements OnInit, OnDestroy, AfterViewInit {
     .pipe(filter(target => target === this.menuTargetName))
     .subscribe(() => this.close())
 
-  constructor(private appbar: AppBar, private store: Store<any>) {}
+  constructor(
+    private appbar: AppBar,
+    private store: Store<any>,
+    private elementRef: ElementRef
+  ) {}
   ngOnInit() {
-    this.store.dispatch(new HideBackdrop()) // TODO - Partially hidden backdrop
+    this.cleanupOnClose()
   }
   ngAfterViewInit() {
-    this.store
-      .select(getPosition)
-      .pipe(
-        filter(position => position === 'up'),
-        take(1)
-      )
-      .subscribe(() => {
-        this.menuToggleSub.unsubscribe()
-        this.appbar.removeMenuTarget(this.menuTargetName)
-      })
+    const translateY = `${this.elementRef.nativeElement.offsetHeight}px`
+    this.store.dispatch(new HideBackdrop({translateY}))
     this.appbar.addMenuTarget(this.menuTargetName)
   }
-  ngOnDestroy() {}
 
   close() {
     this.store.dispatch(new ShowBackdrop())
@@ -56,5 +67,42 @@ export class AppMenuComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     event.preventDefault()
     this.close()
+  }
+
+  private cleanupOnClose() {
+    const detachControls = mergeMap((viewContainerRef: ViewContainerRef) =>
+      combineLatest([
+        of(viewContainerRef),
+        range(1, viewContainerRef.length).pipe(
+          map(() => viewContainerRef.detach()),
+          toArray()
+        )
+      ])
+    )
+    const waitUntilMenuClose = mergeMap(controls =>
+      this.store.select(getPosition).pipe(
+        filter(position => position === 'up'),
+        take(1),
+        mapTo(controls)
+      )
+    )
+    const reattachControls = mergeMap(([viewContainerRef, viewRefs]) =>
+      from(viewRefs).pipe(map(viewRef => viewContainerRef.insert(viewRef)))
+    )
+    this.store
+      .select(getIsAnimating)
+      .pipe(
+        filter(Boolean),
+        take(1),
+        withLatestFrom(this.appbar.controls),
+        pluck(1),
+        detachControls,
+        waitUntilMenuClose,
+        reattachControls
+      )
+      .subscribe(() => {
+        this.menuToggleSub.unsubscribe()
+        this.appbar.removeMenuTarget(this.menuTargetName)
+      })
   }
 }
