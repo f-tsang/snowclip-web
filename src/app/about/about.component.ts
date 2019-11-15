@@ -1,9 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core'
 import {Store} from '@ngrx/store'
-import {getPosition, SetBackdropTitle} from 'ft-backdrop'
-import {filter} from 'rxjs/operators'
-
-import {AppBar} from '../app-bar.service'
+import {SetBackdropTitle} from 'ft-backdrop'
 
 /**
  * TODO
@@ -16,17 +13,11 @@ import {AppBar} from '../app-bar.service'
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent implements OnInit, OnDestroy {
-  private backdropPositionSub = this.store
-    .select(getPosition)
-    .pipe(filter(position => position === 'down'))
-    .subscribe(() => this.appbar.toggleMenu())
-
-  constructor(private appbar: AppBar, private store: Store<any>) {}
+  constructor(private store: Store<any>) {}
   ngOnInit() {
-    this.store.dispatch(new SetBackdropTitle('About'))
+    this.store.dispatch(new SetBackdropTitle('About', true))
   }
   ngOnDestroy() {
-    this.backdropPositionSub.unsubscribe()
     this.store.dispatch(new SetBackdropTitle(null))
   }
 }

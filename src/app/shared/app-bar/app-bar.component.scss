@@ -10,6 +10,7 @@ $text-colour: rgba(255, 255, 255, 0.825);
   grid-template-columns: 5.5rem 1fr max-content;
   align-items: center;
   color: $text-colour;
+  user-select: none;
 
   button {
     color: $text-colour;
@@ -23,7 +24,6 @@ $text-colour: rgba(255, 255, 255, 0.825);
     top: 0;
     left: 0.75rem;
     height: 3rem;
-    user-select: none;
     pointer-events: none;
   }
 }

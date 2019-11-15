@@ -38,11 +38,7 @@ export class AppBar {
 
   toggleMenu() {
     this.targets$
-      .pipe(
-        take(1),
-        mergeAll(),
-        last(null, null)
-      )
+      .pipe(take(1), mergeAll(), last(null, null))
       .subscribe(target => this.menu$.next(target))
   }
   addMenuTarget(target: string) {

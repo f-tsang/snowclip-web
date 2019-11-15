@@ -15,6 +15,7 @@ import {
 } from 'ft-backdrop'
 import {combineLatest, from, of, range} from 'rxjs'
 import {
+  defaultIfEmpty,
   filter,
   map,
   mapTo,
@@ -77,7 +78,7 @@ export class AppMenuComponent implements OnInit, AfterViewInit {
           map(() => viewContainerRef.detach()),
           toArray()
         )
-      ])
+      ]).pipe(take(1))
     )
     const waitUntilMenuClose = mergeMap(controls =>
       this.store.select(getPosition).pipe(
@@ -98,7 +99,8 @@ export class AppMenuComponent implements OnInit, AfterViewInit {
         pluck(1),
         detachControls,
         waitUntilMenuClose,
-        reattachControls
+        reattachControls,
+        defaultIfEmpty()
       )
       .subscribe(() => {
         this.menuToggleSub.unsubscribe()

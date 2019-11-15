@@ -8,8 +8,8 @@ import {
   ViewChild
 } from '@angular/core'
 import {Store} from '@ngrx/store'
-import {getPosition, SetBackdropTitle} from 'ft-backdrop'
-import {filter, switchMap, toArray} from 'rxjs/operators'
+import {SetBackdropTitle} from 'ft-backdrop'
+import {switchMap, toArray} from 'rxjs/operators'
 
 import {AppBar} from '../app-bar.service'
 import {Clip, PurgeBin, RestoreClip} from '../clipboard/clipboard'
@@ -29,18 +29,13 @@ export class BinComponent implements OnInit, OnDestroy, AfterViewInit {
   purgeButton: TemplateRef<ElementRef>
   bin: Clip[] = []
 
-  private backdropPositionSub = this.store
-    .select(getPosition)
-    .pipe(filter(position => position === 'down'))
-    .subscribe(() => this.appbar.toggleMenu())
-
   constructor(
     private appbar: AppBar,
     private db: DatabaseService,
     private store: Store<any>
   ) {}
   ngOnInit() {
-    this.store.dispatch(new SetBackdropTitle('Recycle Bin'))
+    this.store.dispatch(new SetBackdropTitle('Recycle Bin', true))
     this.db.transaction
       .pipe(
         switchMap(tx => {
@@ -56,7 +51,6 @@ export class BinComponent implements OnInit, OnDestroy, AfterViewInit {
     this.appbar.addControl(this.purgeButton)
   }
   ngOnDestroy() {
-    this.backdropPositionSub.unsubscribe()
     this.appbar.clearControls()
     this.store.dispatch(new SetBackdropTitle(null))
   }
