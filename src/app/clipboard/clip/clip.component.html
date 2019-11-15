@@ -1,8 +1,8 @@
 <span
   class="content"
   (tap)="use(clip?.text)"
-  (swipeleft)="favourite()"
-  (swiperight)="delete()"
+  (swipeleft)="favourite($event)"
+  (swiperight)="delete($event)"
   >{{ clip?.text }}</span
 >
 <div class="controls">

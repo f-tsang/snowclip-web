@@ -19,10 +19,16 @@ export class ClipComponent {
   use(text = '') {
     this.clipService.useSnippet(text)
   }
-  delete() {
+  delete(input?: HammerInput) {
+    if (input && input.pointerType === 'mouse') {
+      return
+    }
     this.clipService.deleteSnippet(this.clip)
   }
-  favourite() {
+  favourite(input?: HammerInput) {
+    if (input && input.pointerType === 'mouse') {
+      return
+    }
     this.clipService.toggleFavouriteSnippet(this.clip)
   }
 }
