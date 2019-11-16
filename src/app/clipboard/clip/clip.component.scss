@@ -9,15 +9,17 @@
   align-items: center;
   user-select: none;
 
-  &:hover {
-    cursor: pointer;
-    background: var(--background-hover-colour);
+  @media not all and (hover: on-demand) {
+    &:hover {
+      cursor: pointer;
+      background: var(--background-hover-colour);
 
-    .view-controls {
-      visibility: hidden;
-    }
-    .hover-controls {
-      display: grid;
+      .view-controls {
+        visibility: hidden;
+      }
+      .hover-controls {
+        display: grid;
+      }
     }
   }
 }

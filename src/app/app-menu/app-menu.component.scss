@@ -12,8 +12,10 @@
   cursor: pointer;
   user-select: none;
 
-  &:hover {
-    background: rgba(0, 0, 0, 0.4);
+  @media not all and (hover: on-demand) {
+    &:hover {
+      background: rgba(0, 0, 0, 0.4);
+    }
   }
   > :nth-child(1) {
     padding: 0.5rem;
