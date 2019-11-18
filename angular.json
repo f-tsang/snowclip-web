@@ -27,7 +27,8 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
-              "src/robots.txt"
+              "src/robots.txt",
+              "src/.well-known/assetlinks.json"
             ],
             "styles": ["src/styles.scss"],
             "scripts": []
@@ -92,7 +93,8 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
-              "src/robots.txt"
+              "src/robots.txt",
+              "src/.well-known/assetlinks.json"
             ],
             "styles": ["src/styles.scss"],
             "scripts": []
