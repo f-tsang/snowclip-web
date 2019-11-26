@@ -29,9 +29,7 @@ import {
 } from './clipboard'
 import {ClipboardRoutingModule} from './clipboard-routing.module'
 import {ClipboardComponent} from './clipboard.component'
-import {ClipboardEffects} from './clipboard.effects';
-import { ClipListComponent } from './clip-list/clip-list.component';
-import { ClipEditorComponent } from './clip-editor/clip-editor.component'
+import {ClipboardEffects} from './clipboard.effects'
 
 @NgModule({
   declarations: [

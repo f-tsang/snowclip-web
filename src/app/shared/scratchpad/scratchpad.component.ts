@@ -63,11 +63,4 @@ export class ScratchpadComponent implements OnChanges, OnDestroy {
       this.valueChange.emit(value)
     }
   }
-
-  private setValue(value: string) {
-    if (typeof value === 'string') {
-      this.value = value
-      this.valueChange.emit(value)
-    }
-  }
 }
