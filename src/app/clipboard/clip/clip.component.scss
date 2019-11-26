@@ -9,7 +9,7 @@
   align-items: center;
   user-select: none;
 
-  @media not all and (hover: on-demand) {
+  @media (any-hover: hover) {
     &:hover {
       cursor: pointer;
       background: var(--background-hover-colour);
@@ -36,6 +36,7 @@
   align-items: center;
   gap: var(--gap-size);
 }
+
 .view-controls {
   visibility: visible;
 }

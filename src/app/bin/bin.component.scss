@@ -27,7 +27,7 @@
   gap: 0.5rem;
   align-items: center;
 
-  @media not all and (hover: on-demand) {
+  @media (any-hover: hover) {
     &:hover {
       background: var(--background-hover-colour);
     }
@@ -51,7 +51,7 @@
 }
 .colour-alert {
   color: var(--alert-colour);
-  @media not all and (hover: on-demand) {
+  @media (any-hover: hover) {
     &:hover {
       background: var(--alert-colour);
     }

@@ -28,7 +28,7 @@
   all: unset;
   color: var(--button-colour);
 
-  @media not all and (hover: on-demand) {
+  @media (any-hover: hover) {
     &:hover {
       cursor: pointer;
       color: var(--button-hover-colour);
@@ -57,7 +57,7 @@
 /* Colours */
 .colour-primary {
   color: var(--accent-colour);
-  @media not all and (hover: on-demand) {
+  @media (any-hover: hover) {
     &:hover {
       color: var(--accent-colour);
     }

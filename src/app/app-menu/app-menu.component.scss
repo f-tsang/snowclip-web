@@ -12,7 +12,7 @@
   cursor: pointer;
   user-select: none;
 
-  @media not all and (hover: on-demand) {
+  @media (any-hover: hover) {
     &:hover {
       background: rgba(0, 0, 0, 0.4);
     }
